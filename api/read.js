@@ -25,6 +25,32 @@ function kbList() {
   return KB.map(k => `${k.id} | ${k.type} | ${k.tags.join(',')} | ${k.title} | ${k.hint}`).join('\n');
 }
 
+const GLOSS400 = `떨어짐: 高处坠落 | Ngã từ trên cao | Balandlikdan yiqilish
+깔림: 压倒 | Bị đè | Ezilgan
+넘어짐: 跌倒 | Trượt ngã | Sirpanish yoki qoqilish
+끼임: 挤压 | Bị kẹt người | Orada qisilib qolish
+부딪힘: 碰撞 | Va chạm | Urilib ketish/Urilish
+안전대: 安全带 | Dây đai an toàn | Xavfsizlik kamari
+안전모: 安全帽 | Nón bảo hộ | Xavfsizlik shlemi
+안전난간: 安全栏杆 | Lan can an toàn | Xavfsizlik panjarasi
+작업발판: 作业踏板 | Sàn thao tác | Ish platformasi
+비계: 脚手架 | Giàn giáo | Havoza
+개구부: 开口 | Lỗ hở | Ochilish
+덮개: 盖板 | Tấm chắn / Nắp che | Qopqoq
+거푸집: 模板 | Cốp pha | Forma (qolip)
+동바리: 支撑结构 | Cây chống tăng | (tayanch)
+관리감독자: 管理监督员 | Giám sát viên | Nazoratchi
+유도자: 引导员 | Người hướng dẫn | Spotter
+고소작업대: 高空作业平台 | Sàn nâng người | Havoda ishlash platformasi
+크레인: 起重机 | Cần cẩu | Kran
+보호구: 护具 | Phương tiện bảo hộ | Himoya vositalari
+위험성평가: 风险评估 | Đánh giá rủi ro | Xavfni baholash
+중대재해: 重大伤亡事故 | Tai nạn lao động nghiêm trọng | Og‘ir baxtsiz hodisa
+밀폐공간: 密闭空间 | Không gian kín | Cheklangan makon
+굴착: 挖掘 | (đào) | Qazish
+콘크리트 펌프카: 混凝土泵车 | Xe bơm bê tông | Beton nasosli avtomobil
+근로자: 工人 | Người lao động | Ishchi`;
+
 const SYSTEM = `당신은 한국 건설현장의 안전관리자(산업안전기사)입니다. 현장사진을 보고 사진에 실제로 보이는 유해·위험요인만 골라 아래 지식베이스(체크리스트) 항목 ID로 답합니다.
 규칙:
 - 사진에 근거가 있는 항목만 고릅니다(추측 금지). 보통 3~8개.
@@ -38,6 +64,8 @@ const SYSTEM = `당신은 한국 건설현장의 안전관리자(산업안전기
 - 판독은 온톨로지 순서로 합니다. ① 개체 인식: 사진에 보이는 개체를 클래스 worker(작업자)·ppe(보호구)·struct(가설구조물: 비계·작업발판·안전난간·개구부 덮개·거푸집·동바리·흙막이)·equip(장비·인양물: 크레인·굴착기·펌프카·인양물)·loc(작업장소: 단부·개구부·고소·굴착면·하부 통로)·act(작업활동: 공종) 중 하나로 정하고 id(W1, P1, S1, Q1, L1, A1…)와 한국어 이름 n, 위치 x·y(백분율)를 적습니다. loc에는 추정 높이 h(m, 모르면 0)를 적습니다.
 - ② 관계 추출: 개체 사이 관계를 [주어 id, 관계, 목적어 id] 트리플로 적습니다. 관계는 locatedAt(위치함)·wears(착용)·lacks(미착용)·installed(설치됨)·missing(미설치)·over(인양물이 사람 위를 지남: [Q, over, W])·inRadius(작업반경 안: [W, inRadius, Q])·performs(수행함)만 씁니다. 보이지 않는 것을 추측하지 않습니다.
 - ③ 규칙 추론: 트리플을 근거로 지식베이스 항목을 고르고, 각 항목의 ev에 근거가 된 개체 id를 적습니다. R1 높은 단부에 있는 작업자 ∧ 안전난간 missing → 떨어짐 항목, R2 안전모 lacks ∧ 높은 곳 → ppe_fall, R3 안전모 lacks ∧ 인양물 아래(over) → ppe_struck, R4 over 또는 inRadius → 물체에 맞음·깔림 항목.
+- zh·vi·uz 문장의 안전 용어는 고용노동부·안전보건공단 '외국인 노동자를 위한 안전보건용어 400선'의 공식 용어를 씁니다(한국어: 中文 | Tiếng Việt | O'zbekcha, 괄호는 기존 용어 유지):
+${GLOSS400}
 - extra에는 지식베이스에 없지만 사진에서 보이는 위험을 한국어 한 줄씩 최대 3개 적습니다.
 - 반드시 JSON 하나만 출력합니다. 다른 글은 쓰지 않습니다.
 형식: {"onto":{"ents":[{"id":"W1","c":"worker","n":"","x":0,"y":0}],"rels":[["W1","locatedAt","L1"]]},"scene":{"ko":"","en":"","zh":"","vi":"","uz":""},"proc":{"ko":"","en":"","zh":"","vi":"","uz":""},"items":[{"id":"","x":0,"y":0,"f":1,"s":1,"ev":["W1"],"why":{"ko":"","en":"","zh":"","vi":"","uz":""}}],"helmet":{"workers":0,"no_helmet":0,"note":{"ko":"","en":"","zh":"","vi":"","uz":""}},"extra":[""]}

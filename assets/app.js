@@ -272,7 +272,12 @@ function edAll(){var on=!EDS.ra;EDS.ra=on;setEd(on);['ptwBox','pstBox'].forEach(
 function prMenu(){$('#prm').classList.toggle('open');}
 function printRA(){$('#prm').classList.remove('open');document.body.classList.add('pr-ra');var z=$('#docs').style.zoom;$('#docs').style.zoom=1;window.print();setTimeout(function(){document.body.classList.remove('pr-ra');$('#docs').style.zoom=z;},500);}
 function printFrame(id){$('#prm').classList.remove('open');var f=$('#'+id);try{f.contentWindow.focus();f.contentWindow.print();}catch(e){}}
-function setLang(l){LANG=l;UL=l;$('#langSel').value=l;applyUI();renderOut();if(!ST.sel.length)onChange();}
+function setLang(l){LANG=l;UL=l;$('#langSel').value=l;applyUI();renderOut();renderGloss();if(!ST.sel.length)onChange();}
+/* 고용노동부·안전보건공단 '외국인 노동자를 위한 안전보건용어 400선' — 플랫폼 문장에 쓰인 용어 */
+function renderGloss(){var b=document.getElementById('glossBody');if(!b||typeof GLOSS==='undefined')return;var L=['zh','vi','uz'].indexOf(LANG)>=0?[LANG]:['zh','vi','uz'];
+ var N={zh:'中文',vi:'Tiếng Việt',uz:"O'zbekcha"};var h='<table><tr><th>한국어</th>'+L.map(function(l){return '<th>'+N[l]+'</th>';}).join('')+'<th>쪽</th></tr>';
+ GLOSS.forEach(function(r){h+='<tr><td>'+esc(r.ko)+'</td>'+L.map(function(l){return '<td'+(r[l+'_x']?' class="gx" title="현장 문맥과 정의가 달라 문서에는 기존 용어 사용"':'')+'>'+esc(r[l]||'')+(r[l+'_x']?' ※':'')+'</td>';}).join('')+'<td class="gp">'+esc(r.p)+'</td></tr>';});
+ h+='</table><div class="gn">문서의 中文·Tiếng Việt·O\'zbekcha 문장은 이 공식 용어로 통일하였습니다. English는 400선에 없어 기존 번역을 씁니다. ※ 표시는 현장 문맥과 정의가 달라 기존 용어를 유지한 항목입니다.</div>';b.innerHTML=h;}
 function fitMain(){var m=$('#main'),d=$('#docs');if(!m||!d)return;var w=m.clientWidth-24;var z=Math.min(1,w/1160);d.style.zoom=z>0.3?z:0.3;}
 /* ---------- 시작 ---------- */
 window.addEventListener('resize',fitMain);
@@ -283,7 +288,7 @@ window.onload=function(){var dz=$('#drop'),fi=$('#file');
  dz.addEventListener('drop',function(ev){var f=ev.dataTransfer.files[0];onFile(f);});
  var d=new Date();$('#m_date').value=d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.';ST.meta.date=$('#m_date').value;
  document.addEventListener('click',function(e){if(!e.target.closest('.prwrap'))$('#prm').classList.remove('open');});
- LANG='zh';UL='zh';$('#langSel').value='zh';applyUI();setEng('ai');renderPanel();renderOut();initPTW();probe();setOut('all');
+ LANG='zh';UL='zh';$('#langSel').value='zh';applyUI();setEng('ai');renderPanel();renderOut();renderGloss();initPTW();probe();setOut('all');
  var q=location.search.match(/sample=(\d)/);if(q)loadSample(+q[1]);};
 
 var _ro=renderOut;renderOut=function(){_ro();if(!ST.sel.length)onChange();};

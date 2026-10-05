@@ -269,3 +269,4 @@ body{padding:0!important;background:#E9EDF2}
 #top .gh,.prwrap{flex:none}#top .lg{flex:1 1 auto;min-width:40px}#top .lg img{flex:none}
 @media (max-width:900px){#wrap{display:block}#side{position:static;width:auto;height:auto;border-right:none}#top{overflow-x:auto;gap:6px}#top .st,#top .hide-m,#top h1{display:none}#top .lg{flex:none}#prm{position:fixed;right:8px;top:54px}}
 @media print{#top,#side,#secPTW,#secPST,.sechd,#emptyMsg,#sitefoot,.gpt,#gptFull{display:none!important}#wrap,#main{display:block;padding:0;margin:0}#docs{width:auto;zoom:1!important}html,body{background:#fff!important}}
+.aiex.on{background:#EEF4FB;border-color:#5B8DC9}.aiex.on b{color:#1F3864}

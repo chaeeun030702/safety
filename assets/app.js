@@ -52,7 +52,7 @@ function overview(){var items=ST.sel.map(byId);var mks='';items.forEach(function
  var img=ST.photo?'<img src="'+ST.photo+'" alt="현장사진">':'<div class="empty">사진을 올려 주세요</div>';
  var anno=ST.preset?'<span class="anno">'+TI('p1meta_anno')+'</span>':'';
  return '<div class="sheet">'+head(esc(ko('u_ttl')))+'<div class="body"><div class="p1grid"><div class="pcol"><div class="photowrap" onclick="placeMk(event)">'+img+mks+anno+'</div><div class="hint" style="font-size:6.5pt">'+T('u_photo')+(ST.preset?' — '+esc(ko('p1meta_site')):'')+'</div></div>'+
-  '<div class="rcol">'+verdictHTML(items)+'<div class="kp4" id="kpi4"></div><div class="listhd">'+TI('u_list')+' '+items.length+'</div><div class="hgrid2">'+cards+'</div>'+(cs?'<div class="listhd">'+TI('u_cases')+'</div><table class="cs">'+cs+'</table>':'')+'</div></div></div>'+foot()+'</div>';}
+  '<div class="rcol">'+verdictHTML(items)+'<div class="kp4" id="kpi4"></div><div class="listhd">'+TI('u_list')+' '+items.length+'</div><div class="hgrid2">'+cards+'</div>'+(cs?'<div class="listhd">'+TI('u_cases')+'</div><table class="cs">'+cs+'</table>':'')+ontoHTML()+'</div></div></div>'+foot()+'</div>';}
 function placeMk(ev){if(!ST.active)return;var w=ev.currentTarget.getBoundingClientRect();ST.mk[ST.active]=[Math.round(100*(ev.clientX-w.left)/w.width),Math.round(100*(ev.clientY-w.top)/w.height)];ST.active=null;renderPanel();renderOut();}
 function metaHTML(){var site=ST.preset?TI('p1meta_site'):'<span class="ed">○○ 건설현장</span>';var proc=ST.preset?TI('p1meta_proc'):'<span class="ed">공정명을 입력하세요</span>';
  return '<table class="meta"><tr><th>'+T('c_m_site')+'</th><td>'+site+'</td><th>'+T('c_m_date')+'</th><td><span class="ed">2026. __. __</span></td><th>'+T('c_m_target')+'</th><td>'+T('c_v_site')+'</td></tr>'+
@@ -131,6 +131,12 @@ function verdictHTML(items){var mx=0;items.forEach(function(it){mx=Math.max(mx,F
  return '<div class="verdict"><span class="vt">■ '+TI('u_verdict')+' : '+TI('u_maxrisk')+' <span id="vmax">'+mx+'</span> — '+TI('c_lv'+lv)+' · '+TI('c_mg'+lv)+'</span>'+body+'</div>';}
 /* 마커 좌표: 'box'(사진틀 기준) 또는 'img'(원본 사진 기준 → object-fit:cover 변환) */
 function hasAiBox(){return !!(ST.ai&&((ST.ai.extra&&ST.ai.extra.length)||(ST.ai.helmet&&ST.ai.helmet.workers>0)));}
+var ONTO_C={worker:'작업자',ppe:'보호구',struct:'가설구조물',equip:'장비·인양물',loc:'작업장소',act:'작업활동'},ONTO_R={locatedAt:'위치함',wears:'착용',lacks:'미착용',installed:'설치됨',missing:'미설치',over:'상부 통과',inRadius:'작업반경 안',performs:'수행함'};
+function ontoHTML(){var o=ST.ai&&ST.ai.onto;if(!o||!o.ents.length)return '';var E={},cnt={};o.ents.forEach(function(e){E[e.id]=e;cnt[e.c]=(cnt[e.c]||0)+1;});
+ var cs=Object.keys(ONTO_C).filter(function(c){return cnt[c];}).map(function(c){return ONTO_C[c]+' '+cnt[c];}).join(' · ');
+ var tr=o.rels.slice(0,4).map(function(r){return esc(r[0]+' '+E[r[0]].n)+' ─'+esc(ONTO_R[r[1]])+'→ '+esc(r[2]+' '+E[r[2]].n);}).join('<br>');
+ var ru=ST.ai.rules&&ST.ai.rules.length?' · 규칙 보완 '+ST.ai.rules.length+'건':'';
+ return '<div class="aiex on"><b>🧩 온톨로지 판독</b> 개체 '+o.ents.length+' ('+esc(cs)+') · 관계 '+o.rels.length+'건'+ru+(tr?'<br><span style="font-size:5.8pt;color:#33415c">'+tr+'</span>':'')+'</div>';}
 function boxH(){return hasAiBox()?126:150;}
 function mkPos(p){if(!p)return null;if(p[2]!=='img'||ST.preset)return [p[0],p[1]];var bw=118,bh=boxH(),ar=ST.ar||1.333,iw,ih;if(ar>bw/bh){iw=bw;ih=bw/ar;}else{ih=bh;iw=bh*ar;}
  return [Math.round(((bw-iw)/2+p[0]/100*iw)/bw*1000)/10,Math.round(((bh-ih)/2+p[1]/100*ih)/bh*1000)/10];}
@@ -144,7 +150,7 @@ function overview(){var items=ST.sel.map(byId);var mks='';items.forEach(function
  var ex=ST.ai&&ST.ai.extra.length?'<div class="aiex"><b>🤖 '+esc(U('rdExtra'))+'</b> '+ST.ai.extra.map(esc).join(' · ')+'</div>':'';
  var hm=ST.ai&&ST.ai.helmet&&ST.ai.helmet.workers>0?'<div class="aiex hm'+(ST.ai.helmet.no_helmet>0?' bad':'')+'"><b>🪖 '+TI('u_helmet')+'</b> '+helmetTxt('ko')+'<span class="tr b" data-i="ai_helmet_n"></span>'+(I18N.ai_helmet&&I18N.ai_helmet.ko?'<br>'+T('ai_helmet'):'')+'</div>':'';ex=hm+ex;
  return '<div class="sheet">'+head(esc(ko('u_ttl')))+'<div class="body"><div class="p1grid"><div class="pcol"><div class="photowrap'+(ST.preset?'':' ct')+(hasAiBox()?' short':'')+'" onclick="placeMk(event)">'+img+mks+anno+'</div><div class="hint" style="font-size:6.5pt">'+T('u_photo')+(ST.preset?' — '+esc(ko('p1meta_site')):'')+'</div>'+ex+'</div>'+
-  '<div class="rcol">'+verdictHTML(items)+'<div class="kp4" id="kpi4"></div><div class="listhd">'+TI('u_list')+' '+items.length+'</div><div class="hgrid2">'+cards+'</div>'+(cs?'<div class="listhd">'+TI('u_cases')+'</div><table class="cs">'+cs+'</table>':'')+'</div></div></div>'+foot()+'</div>';}
+  '<div class="rcol">'+verdictHTML(items)+'<div class="kp4" id="kpi4"></div><div class="listhd">'+TI('u_list')+' '+items.length+'</div><div class="hgrid2">'+cards+'</div>'+(cs?'<div class="listhd">'+TI('u_cases')+'</div><table class="cs">'+cs+'</table>':'')+ontoHTML()+'</div></div></div>'+foot()+'</div>';}
 function placeMk(ev){if(!ST.active)return;var w=ev.currentTarget.getBoundingClientRect();var bx=100*(ev.clientX-w.left)/w.width,by=100*(ev.clientY-w.top)/w.height;if(ST.preset){ST.mk[ST.active]=[Math.round(bx),Math.round(by),'box'];}else{var bw=118,bh=boxH(),ar=ST.ar||1.333,iw,ih;if(ar>bw/bh){iw=bw;ih=bw/ar;}else{ih=bh;iw=bh*ar;}ST.mk[ST.active]=[Math.round(((bx/100*bw)-(bw-iw)/2)/iw*100),Math.round(((by/100*bh)-(bh-ih)/2)/ih*100),'img'];}ST.active=null;renderPanel();renderOut();}
 /* ---------- 왼쪽 패널: 체크리스트(지식베이스) ---------- */
 function renderPanel(){

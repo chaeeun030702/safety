@@ -5,6 +5,7 @@ const KB = require('./_kb.js');
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5';
 const LANGS = ['ko', 'en', 'zh', 'vi', 'uz'];
+// 안전모 미착용 판독 항목: ppe_fall(떨어짐), ppe_struck(물체에 맞음)
 
 function kbList() {
   return KB.map(k => `${k.id} | ${k.type} | ${k.tags.join(',')} | ${k.title} | ${k.hint}`).join('\n');
@@ -17,9 +18,12 @@ const SYSTEM = `당신은 한국 건설현장의 안전관리자(산업안전기
 - f(빈도·가능성)와 s(강도·중대성)는 KRAS 3×3 기준 1~3 정수로 적습니다.
 - why는 사진에서 본 근거를 한 문장으로, ko(한국어)·en·zh(简体)·vi·uz(O'zbek lotin) 다섯 언어로 적습니다.
 - scene은 사진 전체 상황과 가장 큰 위험을 1~2문장으로, proc은 추정 공정·작업명을 짧게, 다섯 언어로 적습니다.
+- 안전모 착용 여부를 반드시 따로 판독합니다. 사진에 보이는 근로자를 한 명씩 보고 안전모를 썼는지 확인합니다(야구모자·두건·머리 수건만 쓴 경우는 미착용, 턱끈이 풀린 것이 보이면 why에 적음). 판단이 어려운 사람은 미착용으로 세지 않습니다.
+- 안전모 미착용자가 있으면: 높은 곳·단부·비계·작업발판 위에서 일하는 사람이면 ppe_fall, 위쪽 작업이나 인양물·해체물 아래에 있는 사람이면 ppe_struck를 고릅니다(둘 다 해당하면 둘 다). 이 항목의 x, y는 그 근로자의 머리 위치입니다.
+- helmet에는 workers(사진에 보이는 근로자 수), no_helmet(안전모 미착용자 수), note(누가 어디에서 쓰지 않았는지 한 문장, 다섯 언어)를 적습니다. 근로자가 보이지 않으면 workers는 0입니다.
 - extra에는 지식베이스에 없지만 사진에서 보이는 위험을 한국어 한 줄씩 최대 3개 적습니다.
 - 반드시 JSON 하나만 출력합니다. 다른 글은 쓰지 않습니다.
-형식: {"scene":{"ko":"","en":"","zh":"","vi":"","uz":""},"proc":{"ko":"","en":"","zh":"","vi":"","uz":""},"items":[{"id":"","x":0,"y":0,"f":1,"s":1,"why":{"ko":"","en":"","zh":"","vi":"","uz":""}}],"extra":[""]}
+형식: {"scene":{"ko":"","en":"","zh":"","vi":"","uz":""},"proc":{"ko":"","en":"","zh":"","vi":"","uz":""},"items":[{"id":"","x":0,"y":0,"f":1,"s":1,"why":{"ko":"","en":"","zh":"","vi":"","uz":""}}],"helmet":{"workers":0,"no_helmet":0,"note":{"ko":"","en":"","zh":"","vi":"","uz":""}},"extra":[""]}
 
 지식베이스 (id | 재해유형 | 공종태그 | 항목 | 판단 단서):
 ${kbList()}`;
@@ -41,7 +45,9 @@ function clean(j) {
   const seen = new Set();
   const items = (Array.isArray(j.items) ? j.items : []).filter(it => it && ids.has(it.id) && !seen.has(it.id) && seen.add(it.id)).slice(0, 12)
     .map(it => ({ id: it.id, x: clamp(it.x, 0, 100, 50), y: clamp(it.y, 0, 100, 50), f: clamp(it.f, 1, 3, 2), s: clamp(it.s, 1, 3, 2), why: ml(it.why) }));
-  return { scene: ml(j.scene), proc: ml(j.proc), items, extra: (Array.isArray(j.extra) ? j.extra : []).filter(x => typeof x === 'string').slice(0, 3).map(x => x.slice(0, 200)) };
+  const h = j.helmet || {}; const workers = clamp(h.workers, 0, 50, 0);
+  const helmet = { workers, no_helmet: Math.min(workers, clamp(h.no_helmet, 0, 50, 0)), note: ml(h.note) };
+  return { scene: ml(j.scene), proc: ml(j.proc), items, helmet, extra: (Array.isArray(j.extra) ? j.extra : []).filter(x => typeof x === 'string').slice(0, 3).map(x => x.slice(0, 200)) };
 }
 
 module.exports = async (req, res) => {
@@ -68,7 +74,7 @@ module.exports = async (req, res) => {
         model: MODEL, max_tokens: 4000, system: SYSTEM,
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
-          { type: 'text', text: '이 건설현장 사진을 판독해 JSON으로 답하세요.' + (body.site ? ' 참고 현장정보: ' + String(body.site).slice(0, 200) : '') }
+          { type: 'text', text: '이 건설현장 사진을 판독해 JSON으로 답하세요. 근로자별 안전모 착용 여부도 꼭 확인하세요.' + (body.site ? ' 참고 현장정보: ' + String(body.site).slice(0, 200) : '') }
         ] }]
       })
     });

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>건설현장 안전문서 자동생성 플랫폼 | 위험성평가표 · 사전작업허가서 · 안전포스터</title>
+<meta name="description" content="현장사진 한 장으로 위험 설명, 위험성평가표, 사전작업허가서(PTW), 안전포스터를 다국어로 자동 생성하는 플랫폼. 체크리스트(지식베이스)와 RAG(1~3단계 DB), Claude AI 판독 기반.">
+<meta name="author" content="충북대학교 안전공학과 이채은">
+<meta property="og:title" content="건설현장 안전문서 자동생성 플랫폼">
+<meta property="og:description" content="현장사진 → 위험 설명 → 위험성평가표 → 사전작업허가서(PTW) → 안전포스터 (한국어 기준 다국어 병기)">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/cbnu.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+</head><body>
+<div id="top">
+ <div class="lg"><img src="assets/cbnu.png" alt="충북대학교"><div style="min-width:0"><h1 data-ui="title">건설현장 안전문서 자동생성 플랫폼</h1><div class="st" data-ui="sub"></div></div></div>
+ <button class="gh" onclick="loadSample(1)" data-ui="sample1"></button><button class="gh hide-m" onclick="loadSample(2)" data-ui="sample2"></button><button class="gh hide-m" onclick="loadSample(3)" data-ui="sample3"></button>
+ <button class="gh" onclick="resetAll()" data-ui="reset"></button><button class="gh" id="eb" onclick="edAll()">✏️ 편집 모드</button>
+ <span class="prwrap"><button class="gh pri" onclick="prMenu()">🖨️ <span data-ui="print"></span> ▾</button><div id="prm"><button onclick="printRA()" data-ui="pr_ra"></button><button onclick="printFrame('ptwBox')" data-ui="pr_ptw"></button><button onclick="printFrame('pstBox')" data-ui="pr_pst"></button></div></span>
+</div>
+<div id="wrap">
+<aside id="side">
+ <h3 data-ui="s1" class="bi"></h3>
+ <div class="dropzone" id="drop"><span class="cam">📷</span><span data-ui="drop"></span><div class="thumb" id="thumb"></div></div>
+ <input type="file" id="file" accept="image/*" hidden>
+ <div class="hint bi" data-ui="privacy"></div>
+ <div id="rdStat" class="rdstat"></div>
+ <h3 data-ui="s2" class="bi"></h3>
+ <div class="fld"><label data-ui="m_site"></label><input id="m_site" oninput="metaIn()" placeholder="○○ 신축공사"><label data-ui="m_proc"></label><input id="m_proc" oninput="metaIn()" placeholder="거푸집 조립"><label data-ui="m_date"></label><input id="m_date" oninput="metaIn()"><label data-ui="m_by"></label><input id="m_by" oninput="metaIn()" placeholder="관리감독자 ○○○"><label data-ui="m_forn"></label><input id="m_forn" type="number" min="0" oninput="metaIn()" placeholder="2"></div>
+ <h3 data-ui="s3" class="bi"></h3>
+ <select id="langSel" onchange="setLang(this.value)"><option value="ko">한국어만</option><option value="en">English</option><option value="zh">中文</option><option value="vi">Tiếng Việt</option><option value="uz">O'zbekcha</option></select>
+ <div class="hint bi" data-ui="langHint"></div>
+ <h3 data-ui="s4" class="bi"></h3>
+ <div class="seg" id="engSeg"><button data-e="ai" onclick="setEng('ai')" data-ui="engAi"></button><button data-e="auto" onclick="setEng('auto')" data-ui="engAuto"></button><button data-e="man" onclick="setEng('man')" data-ui="engMan"></button></div>
+ <div class="hint" id="engHint"></div>
+ <div id="chips" class="chips" style="margin-top:6px"></div>
+ <div class="kbhd"><span>📋 <b>지식베이스</b> <span id="kbCount"></span> · <span data-ui="pinHint"></span></span><button onclick="selNone()" data-ui="selnone"></button></div>
+ <div id="kb"></div>
+ <h3 data-ui="s5" class="bi"></h3>
+ <div class="seg" id="outSeg"><button data-o="all" onclick="setOut('all')" data-ui="outAll"></button><button data-o="ra" onclick="setOut('ra')" data-ui="outRA"></button><button data-o="ptw" onclick="setOut('ptw')" data-ui="outPTW"></button><button data-o="pst" onclick="setOut('pst')" data-ui="outPST"></button></div>
+ <button class="go" onclick="goGen()" data-ui="go"></button>
+ <h3 data-ui="s6" class="bi"></h3>
+ <div class="keyrow"><input type="password" id="apiKey" autocomplete="off" spellcheck="false" placeholder="sk-ant-api03-…"><button onclick="keySave()" data-ui="keySave"></button><button onclick="keyClear()" data-ui="keyClear"></button></div>
+ <div class="keystat" id="keyStat"></div>
+</aside>
+<main id="main"><div id="docs">
+ <div id="emptyMsg" class="bi" data-ui="empty"></div>
+ <section id="secRA"><div class="sechd bi" data-ui="secRA"></div><div id="out"></div></section>
+ <section id="secPTW"><div class="sechd bi" data-ui="secPTW"></div><iframe id="ptwBox" class="frm" style="width:225mm;height:3500px" title="사전작업허가서"></iframe></section>
+ <section id="secPST"><div class="sechd bi" data-ui="secPST"></div>
+  <div class="gpt"><h3>🤖 ChatGPT 추가작업 — 포스터 실사 이미지</h3>
+  <div class="row"><b>요청 종류</b><select id="gmode" class="lsel" onchange="mkPrompt()"><option value="card">카드 사진 (안전한 작업 모습) → 포스터에 바로 삽입</option><option value="full">포스터 전체 실사판 (3단계 방식)</option></select>
+  <button class="btn" onclick="mkPrompt()">↻ 프롬프트 다시 만들기</button><button class="btn g pri" onclick="gptGo()">📋 복사 + ChatGPT 열기</button>
+  <label class="btn g">🖼️ ChatGPT 결과 이미지 넣기<input type="file" accept="image/*" style="display:none" onchange="onGpt(this)"></label></div>
+  <textarea id="gprompt" spellcheck="false"></textarea><div class="hint" id="gmsg">ChatGPT 로그인은 직접 해 주세요. 받은 이미지를 '결과 이미지 넣기'로 올리면 카드 사진이 바뀌거나(카드) 아래에 실사판이 표시됩니다(전체).</div></div>
+  <iframe id="pstBox" class="frm" style="width:300mm;height:1650px" title="안전포스터"></iframe><div id="gptFull"><b></b><img alt="ChatGPT 실사판 포스터"></div></section>
+ <div id="sitefoot" data-ui="foot"></div>
+</div></main>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body></html>

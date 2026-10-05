@@ -1,0 +1,9 @@
+{
+  "name": "safety",
+  "version": "1.0.0",
+  "private": true,
+  "description": "건설현장 안전문서 자동생성 플랫폼 (위험성평가표·PTW·안전포스터, 다국어)",
+  "engines": {
+    "node": ">=18"
+  }
+}

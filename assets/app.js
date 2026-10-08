@@ -357,20 +357,23 @@ function splitActs(arr) { var parts = arr.map(function (s, i) { var re = (i === 
   var n = parts[0].length; if (parts.every(function (p) { return p.length === n; })) { var o = []; for (var j = 0; j < n; j++) o.push(parts.map(function (p) { return p[j]; })); return o; } return [parts.map(function (p) { return p[0]; })]; }
 function lawNums(rows) { var out = []; rows.forEach(function (r) { var k = KBI[r.id]; if (!k) return; var t = String(k.law).split('/')[0], re = /제(\d+)조(의(\d+))?/g, m;
   while ((m = re.exec(t))) { var pre = t.slice(0, m.index); if (pre.lastIndexOf('산업안전보건법') > pre.lastIndexOf('규칙')) continue; var a = m[1] + (m[3] ? '의' + m[3] : ''); if (out.indexOf(a) < 0) out.push(a); } }); return out.slice(0, 8); }
+var GCARD = { b1: 'samples/row/b1_card.jpg' }; // 표본별 ChatGPT 실사 ‘올바른 작업’ 카드
+var ROWIMG = { G02_bad: 1, G01_bad: 1, G21_bad: 1, G02_good: 1, G01_good: 1, G21_good: 1 }; // samples/row/ 에 저장된 ChatGPT 실사 행 사진(표지별)
+function rowImg(id, ok) { var k = id + (ok ? '_good' : '_bad'); return ROWIMG[k] ? 'samples/row/' + k + '.jpg' : null; }
 function posterData(rows, kind) {
   var kbRows = rows.filter(function (r) { return !r.cust && KBI[r.id]; }).sort(function (a, b) { return b.v - a.v || a.no - b.no; });
   var th = mainTheme(kbRows), T = THEMES[th], tx = {};
   ['slogan', 't1', 't2', 'sub', 'good_t', 'good_c', 'banner'].forEach(function (f) { tx[f === 'slogan' ? 'c_slogan' : f] = T[f]; });
-  var top = kbRows.slice(0, 3), icons = [];
-  top.forEach(function (r, i) { var k = KBI[r.id]; tx['d' + i + '_t'] = short(k.tag, 40); tx['d' + i + '_c'] = k.cause; icons[i] = icon(themeOf(r.id), false); });
-  var acts = [], used = {}; for (var pass = 0; pass < 3 && acts.length < 3; pass++) top.forEach(function (r) { if (acts.length >= 3) return; var a = splitActs(KBI[r.id].act)[pass]; if (a && !used[a[0]]) { used[a[0]] = 1; acts.push({ a: a, r: r }); } });
-  acts.forEach(function (x, i) { var k = KBI[x.r.id]; tx['m' + i + '_t'] = x.a; var am = AMD(x.r.id); tx['m' + i + '_c'] = [am + ' ' + short(k.tag, 34)[0] + ' 대책', am + ' — countermeasure', am + ' 对策', 'Biện pháp ' + am, am + ' chorasi']; icons[3 + i] = icon(themeOf(x.r.id), true); });
+  var top = kbRows.slice(0, 3), icons = [], rimg = [];
+  top.forEach(function (r, i) { var k = KBI[r.id]; tx['d' + i + '_t'] = short(k.tag, 40); tx['d' + i + '_c'] = k.cause; icons[i] = icon(themeOf(r.id), false); rimg[i] = rowImg(r.id, false); });
+  var acts = [], used = {}; for (var pass = 0; pass < 3 && acts.length < 3; pass++) top.forEach(function (r) { if (acts.length >= 3) return; var a = splitActs(KBI[r.id].act)[pass]; if (a && !used[a[0]]) { used[a[0]] = 1; acts.push({ a: a, r: r, p: pass }); } });
+  acts.forEach(function (x, i) { var k = KBI[x.r.id]; tx['m' + i + '_t'] = x.a; var am = AMD(x.r.id); tx['m' + i + '_c'] = [am + ' ' + short(k.tag, 34)[0] + ' 대책', am + ' — countermeasure', am + ' 对策', 'Biện pháp ' + am, am + ' chorasi']; icons[3 + i] = icon(themeOf(x.r.id), true); rimg[3 + i] = x.p === 0 ? rowImg(x.r.id, true) : null; });
   if (top[0]) { var t0 = short(KBI[top[0].id].tag, 34); tx.bad_t = ['현장사진: ' + t0[0], 'Site photo: ' + t0[1], '现场照片：' + t0[2], 'Ảnh hiện trường: ' + t0[3], 'Obyekt surati: ' + t0[4]];
     var lst = kbRows.slice(0, 5); tx.bad_c = [0, 1, 2, 3, 4].map(function (j) { return lst.map(function (r) { return '①②③④⑤⑥⑦⑧⑨'[r.no - 1 > 8 ? 8 : r.no - 1] + ' ' + short(KBI[r.id].tag, 28)[j]; }).join('  '); });
     tx.data = KBI[top[0].id].csi; }
   var nums = lawNums(kbRows), g = 'C-C-49-2026';
   tx.law = ['산업안전보건기준에 관한 규칙 제' + nums.join('·') + '조 · KOSHA GUIDE ' + g, 'OSH Standards Rule Art. ' + nums.join(', ') + ' · KOSHA GUIDE ' + g, '产业安全保健标准规则 第' + nums.join('·') + '条 · KOSHA GUIDE ' + g, 'Quy tắc tiêu chuẩn ATVSLĐ Điều ' + nums.join(', ') + ' · KOSHA GUIDE ' + g, 'MMX standartlari qoidasi ' + nums.join(', ') + '-moddalar · KOSHA GUIDE ' + g];
-  return { texts: tx, icons: icons, nd: top.length, nm: acts.length, theme: th };
+  return { texts: tx, icons: icons, rimg: rimg, nd: top.length, nm: acts.length, theme: th };
 }
 function icon(th, ok) { var bg = ok ? '#e8f5ea' : '#fdecea', badge = ok ? '<circle cx="140" cy="20" r="14" fill="#1E7B3A"/><path d="M132,20 l5,5 l10,-11" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' : '<circle cx="140" cy="20" r="14" fill="#B3261E"/><path d="M133,13 l14,14 M147,13 l-14,14" stroke="#fff" stroke-width="4" stroke-linecap="round"/>';
   return '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet"><rect width="160" height="120" fill="' + bg + '"/>' + (ICON[th] || ICON.shock) + badge + '</svg>'; }
@@ -380,16 +383,17 @@ function syncPoster() {
   var sig = [ids.join(), JSON.stringify(H.rows.map(function (r) { return r.v; })), H.sample, H.photo ? H.photo.length : 0, H.gpt ? H.gpt.length : 0, JSON.stringify(w.S.mk), k].join('|');
   if (H.sig.pst === sig) { if (H.sig.pstL !== LANG) { f.setLang(LANG); H.sig.pstL = LANG; mkPrompt(); } return; }
   H.sig.pst = sig; H.sig.pstL = LANG;
+  var pd = null;
   if (H.sample === 'e2' && sameSet(ids, w.D.PHORD)) { f.hostPST({ sample: true, gpt: H.gpt, lang: LANG }); }
   else {
-    var pd = posterData(H.rows, k), marks = [];
+    pd = posterData(H.rows, k); var marks = [];
     H.rows.forEach(function (r) { var p = w.S.mk[r.id]; if (p) marks.push([p[0], p[1], r.no]); });
     var d = new Date(), ymd = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
-    f.hostPST({ texts: pd.texts, icons: pd.icons, nd: pd.nd, nm: pd.nm, photo: H.photo || (H.orig && H.orig.photo), pw: H.pw, ph: H.ph, marks: marks, fname: H.fname, gpt: H.gpt, lang: LANG,
+    f.hostPST({ texts: pd.texts, icons: pd.icons, nd: pd.nd, nm: pd.nm, photo: H.photo || (H.orig && H.orig.photo), pw: H.pw, ph: H.ph, marks: marks, fname: H.fname, gpt: H.gpt || GCARD[H.sample] || null, lang: LANG,
       code: '2026-CBNU-포스터-' + (k === 'c49' ? '전기' : '일반') + '-' + ymd,
       src: '사진: 왼쪽 실제 현장사진(' + (H.fname || '업로드') + ') · 오른쪽 ChatGPT 이미지 생성(상황 재현) · 통계: CSI 건설사고 사례 재집계, 1단계 분석보고서 · 외국어 병기는 「안전보건용어 400선」 표준 대역어를 우선 적용했고, 400선 외 용어는 연구자가 번역했다. 현장 적용 전 관리감독자가 확인한다.' });
   }
-  if (H.rimgSig !== sig) H.rimg = {}; H.rimgSig = sig;
+  if (H.rimgSig !== sig) { H.rimg = {}; if (pd && pd.rimg) pd.rimg.forEach(function (u, i) { if (u) H.rimg[i] = u; }); } H.rimgSig = sig;
   Object.keys(H.rimg || {}).forEach(function (i) { f.hostRowImg(+i, H.rimg[i], i >= 3); });
   setTimeout(function () { fitFrame('pstBox'); fitMain(); mkPrompt(); }, 350);
 }

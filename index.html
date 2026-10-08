@@ -88,7 +88,7 @@
  <section class="step"><h3 class="bi" data-ui="s4"></h3>
   <div class="seg" id="engSeg"><button data-e="ai" data-ui="engAi"></button><button data-e="kw" data-ui="engKw"></button><button data-e="man" data-ui="engMan"></button></div>
   <div class="hint" id="engHint"></div>
-  <div class="dombox"><b class="bi" data-ui="domLab"></b><div class="seg sm3" id="domSeg"><button data-d="auto">자동 판정</button><button data-d="c49">전기 PTW</button><button data-d="gen">일반 건설 PTW</button></div><div id="domRes" class="domres"></div></div>
+  <div class="dombox"><b class="bi" data-ui="domLab"></b><div class="seg sm3" id="domSeg"><button data-d="auto">자동 판정</button><button data-d="c49">전기 PTW</button><button data-d="gen">건축·설비 PTW</button></div><div id="domRes" class="domres"></div></div>
  </section>
  <section class="step"><h3 class="bi" data-ui="s5"></h3>
   <div class="tabs"><button id="tabE" onclick="setTab('elec')">⚡ 전기설비 U01–U19</button><button id="tabG" onclick="setTab('gen')">🏗️ 건축·설비 G01–G31</button></div>
@@ -117,7 +117,6 @@
   <div class="keystat" id="oKeyStat"></div>
  </section>
  <section class="step"><h3>⑩ 발송 설정 (메일·문자)</h3>
-  <div class="hint">상단 바의 <b>✉️ 메일 발송</b> · <b>💬 문자 발송</b> 버튼을 누르면 받는 사람을 고르는 창이 뜨고, <b>‘[경고] 현장사진 위험성 분석(위험 N건 · 9이상 M건)’</b>을 메일(분석 sheet 첨부)·문자로 보냅니다.</div>
   <div class="subh no-art">💬 문자 — Solapi 키 (이 브라우저에만 저장)</div>
   <div class="solbox no-art">
    <label for="solKey">API Key</label><input id="solKey" autocomplete="off" spellcheck="false" placeholder="예: NCSA…">
@@ -147,7 +146,7 @@
  <section id="secRA" class="sec"><div class="sechd bi" data-ui="secRA"></div><iframe id="raBox" class="frm" scrolling="no" title="위험분석·위험성평가표" style="width:1160px;height:3000px"></iframe></section>
  <section id="secPTW" class="sec"><div class="sechd bi" data-ui="secPTW"></div>
   <iframe id="c49Box" class="frm" scrolling="no" title="사전작업허가서 (전기)" style="width:860px;height:4000px"></iframe>
-  <iframe id="genBox" class="frm" scrolling="no" title="사전작업허가서 (일반 건설)" style="width:860px;height:4000px;display:none"></iframe></section>
+  <iframe id="genBox" class="frm" scrolling="no" title="사전작업허가서 (건축·설비)" style="width:860px;height:4000px;display:none"></iframe></section>
  <section id="secPST" class="sec"><div class="sechd bi" data-ui="secPST"></div>
   <iframe id="pstBox" class="frm" scrolling="no" title="다국어 안전포스터" style="width:1160px;height:1650px"></iframe>
   <div class="gpt"><h3 class="bi" data-ui="gptH"></h3>

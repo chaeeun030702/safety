@@ -2,7 +2,7 @@
    상태의 기준은 위험분석 프레임(ra.html)의 S 다. 이 파일은 사진·판독·패널을 다루고, 프레임 렌더가 끝날 때마다(onRA)
    허가서와 포스터를 다시 맞춘다. 생성 결과는 초안이며 최종 판단은 관리감독자가 한다. */
 'use strict';
-var LANG = 'zh', ENG = 'ai', OUT = 'all', DOMSEL = 'auto', TAB = 'elec', APIKEY = '', SERVERKEY = null, BUSY = false, EDIT = false;
+var LANG = 'zh', ENG = 'ai', OUT = 'all', DOMSEL = 'auto', TAB = 'gen', APIKEY = '', SERVERKEY = null, BUSY = false, EDIT = false;
 var LIX = { ko: 0, en: 1, zh: 2, vi: 3, uz: 4 };
 var KBI = {}; KB.forEach(function (k) { KBI[k.id] = k; });
 var H = { sample: null, photo: null, pw: 1600, ph: 1164, fname: '', gpt: null, ready: { ra: 0, c49: 0, gen: 0, pst: 0 }, sig: {}, rows: [], pending: null, orig: null, meta: {} };
@@ -121,7 +121,7 @@ function renderPanel() {
   var dr = $('#domRes'), key = d === 'n' ? 'domN' : (k === 'c49' ? 'domE' : 'domG');
   dr.className = 'domres ' + (d === 'n' ? '' : (k === 'c49' ? 'e' : 'g'));
   dr.innerHTML = esc(U(key)) + (DOMSEL !== 'auto' && d !== 'n' ? ' <small>(관리감독자 지정)</small>' : '') + (UT(key) ? '<small class="uitr">' + esc(UT(key)) + '</small>' : '');
-  $('#tabE').classList.toggle('on', TAB === 'elec'); $('#tabG').classList.toggle('on', TAB === 'gen');
+  TAB = 'gen'; if ($('#tabE')) $('#tabE').classList.toggle('on', false); $('#tabG').classList.toggle('on', true);
   var order = TAB === 'elec' ? GO : GOG, h = '';
   order.forEach(function (g) {
     var its = KB.filter(function (x) { return x.dom === TAB && x.grp === g; }); if (!its.length) return;
@@ -137,13 +137,13 @@ function renderPanel() {
   });
   $('#kb').innerHTML = h;
   var nE = S.sel.filter(function (i) { return i[0] === 'U'; }).length, nG = S.sel.filter(function (i) { return i[0] === 'G'; }).length, nC = S.sel.filter(function (i) { return i[0] === 'C'; }).length;
-  var LEG = { ko: ['U: Utility — 전력·가스·수도 등 공급설비', 'G: General — 일반 건설 작업', 'A: Architecture — 건축공사(건축물공사와 부대공사) · G21~G25', 'M: Mechanical — 건축설비공사(기계·소방·전기·통신 설비) · G26~G30'], en: ['U: Utility — power, gas, water and other supply facilities', 'G: General — general construction work', 'A: Architecture — building work (building construction and ancillary works) · G21–G25', 'M: Mechanical — building-services work (mechanical, fire, electrical, telecom) · G26–G30'], zh: ['U：Utility — 电力·燃气·供水等供应设施', 'G：General — 一般建设作业', 'A：Architecture — 建筑工程（建筑物工程及附属工程）· G21~G25', 'M：Mechanical — 建筑设备工程（机械·消防·电气·通信）· G26~G30'], vi: ['U: Utility — cơ sở cung cấp điện, gas, nước…', 'G: General — công việc xây dựng chung', 'A: Architecture — công trình kiến trúc (xây dựng và hạng mục phụ trợ) · G21–G25', 'M: Mechanical — cơ điện công trình (cơ khí, PCCC, điện, viễn thông) · G26–G30'], uz: ['U: Utility — elektr, gaz, suv va boshqa taʼminot inshootlari', 'G: General — umumiy qurilish ishlari', 'A: Architecture — qurilish ishlari (bino va yordamchi ishlar) · G21–G25', 'M: Mechanical — bino muhandislik tizimlari (mexanik, yongʻin, elektr, aloqa) · G26–G30'] };
+  var LEG = { ko: ['G: General — 일반 건설 작업', 'A: Architecture — 건축공사(건축물공사와 부대공사) · G21~G25', 'M: Mechanical — 건축설비공사(기계·소방·전기·통신 설비) · G26~G30'], en: ['G: General — general construction work', 'A: Architecture — building work (building construction and ancillary works) · G21–G25', 'M: Mechanical — building-services work (mechanical, fire, electrical, telecom) · G26–G30'], zh: ['G：General — 一般建设作业', 'A：Architecture — 建筑工程（建筑物工程及附属工程）· G21~G25', 'M：Mechanical — 建筑设备工程（机械·消防·电气·通信）· G26~G30'], vi: ['G: General — công việc xây dựng chung', 'A: Architecture — công trình kiến trúc (xây dựng và hạng mục phụ trợ) · G21–G25', 'M: Mechanical — cơ điện công trình (cơ khí, PCCC, điện, viễn thông) · G26–G30'], uz: ['G: General — umumiy qurilish ishlari', 'A: Architecture — qurilish ishlari (bino va yordamchi ishlar) · G21–G25', 'M: Mechanical — bino muhandislik tizimlari (mexanik, yongʻin, elektr, aloqa) · G26–G30'] };
   $('#kbLeg').innerHTML = '<b>표지 번호 범례</b>' + LEG.ko.map(function (k, i) { return '<div>' + esc(k) + (LANG !== 'ko' && LEG[LANG] ? '<small class="uitr">' + esc(LEG[LANG][i]) + '</small>' : '') + '</div>'; }).join('');
-  $('#kbCount').innerHTML = '선택 <b>' + S.sel.length + '</b> / ' + KB.length + ' · 전기 ' + nE + ' · 건축·설비 ' + nG + (nC ? ' · 추가 ' + nC : '');
+  $('#kbCount').innerHTML = '선택 <b>' + nG + '</b> / ' + KB.filter(function (k) { return k.id[0] === 'G'; }).length + ' · 건축·설비 ' + nG + (nC ? ' · 추가 ' + nC : '');
   $('#corr').innerHTML = CORR.map(function (c) { return '<label><input type="checkbox" data-c="' + c.id + '"' + (S.corr[c.id] ? ' checked' : '') + '><span><b>' + esc(c.lab[0]) + '</b> — ' + esc(c.why[0]) + ' <i>(' + (c.grp ? c.grp.join('·') : '전 군') + ')</i></span></label>'; }).join('');
   $('#custList').innerHTML = S.custom.map(function (c) { var on = S.sel.indexOf(c.id) >= 0; return '<div class="cl"><span><b>' + c.id + '</b> ' + esc(c.name) + ' (빈도 ' + c.p + '·강도 ' + c.s + ')' + (on ? ' <button class="pin" data-pin="' + c.id + '" title="사진에 위치 지정" style="color:inherit">📍</button>' : '') + '</span><button data-del="' + c.id + '" title="삭제">✕</button></div>'; }).join('');
 }
-function setTab(t) { TAB = t; renderPanel(); }
+function setTab(t) { TAB = 'gen'; renderPanel(); }
 function rerender() { var w = RAW(); if (w) w.renderAll(); }
 function selNone() { var w = RAW(); if (!w) return; w.S.sel = w.S.sel.filter(function (id) { return id[0] === 'C'; }); w.S.mk = {}; w.S.ps = {}; rerender(); }
 document.addEventListener('change', function (ev) {
@@ -218,8 +218,8 @@ function loadSample(n) {
   var s = SAMPLES[n]; H.sample = n; H.fname = s.name; H.gpt = s.card || null; H.sig = {}; $('#gptFull').style.display = 'none';
   var S = freshState(w);
   if (s.hits) { S.ph2 = false; S.sel = []; S.mk = {}; S.src = {}; s.hits.forEach(function (h) { S.sel.push(h[0]); S.mk[h[0]] = [h[1], h[2]]; S.src[h[0]] = { ai: h[3] }; });
-    S.scene = s.scene; S.corr = JSON.parse(JSON.stringify(s.corr)); S.fname = s.name; TAB = s.dom || 'gen'; }
-  else { TAB = 'elec'; }
+    S.scene = s.scene; S.corr = JSON.parse(JSON.stringify(s.corr)); S.fname = s.name; TAB = 'gen'; }
+  else { TAB = 'gen'; }
   w.S = S; H.photo = s.photo;
   var im = new Image(); im.onload = function () { H.pw = im.naturalWidth; H.ph = im.naturalHeight; }; im.src = s.photo;
   $('#thumb').innerHTML = '<img src="' + s.photo + '" alt="">'; $('#drop').classList.add('has');
@@ -269,7 +269,7 @@ function applyAI(j, lang) {
   S.scene = j.scene ? arr5(j.scene, lang) : null;
   var noKbHit = !j.hits || !j.hits.length;
   (j.extra || []).slice(0, 3).forEach(function (x) { var t = Array.isArray(x) ? x[0] : x; if (!t) return; var c = { id: 'C' + (++S.cn), name: String(t), cause: String(t), acts: ['관리감독자가 대책을 적는다'], p: 2, s: 2 }; c.ai = 1; if (Array.isArray(x) && x[1]) c.nm5 = arr5(x, lang); S.custom.push(c); S.sel.push(c.id); });
-  if (j.domain === 'gen') TAB = 'gen'; else if (j.domain === 'elec') TAB = 'elec';
+  TAB = 'gen';
   applyMeta(true); w.renderAll();
   status('🤖 AI 판독 완료 — 위험 표지 <b>' + j.hits.length + '</b>건' + ((j.extra || []).length ? ', 지식베이스 밖 추가 위험 ' + j.extra.length + '건(⑥ 목록)' : '') + ' · ' + esc(j.model || '') + '<br><small>체크리스트에서 더하거나 빼고, 빈도·강도는 평가표에서 고칩니다.</small>' + (noKbHit ? '<br><small>⚠️ 지식베이스 표지가 없어 <b>사전작업허가서·안전포스터는 만들지 않습니다</b>(추가 위험은 위험분석·평가표에만 반영).</small>' : ''), noKbHit ? 'warn' : 'ok');
 }

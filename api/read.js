@@ -45,16 +45,29 @@ function systemPrompt(lang) {
     '[건축·설비 작업 표지 G01~G31]',
     kbText('gen'),
     '',
+    '판독 순서(반드시 이 순서로 확인한다)',
+    ' ① 사람: 사진 속 사람을 왼쪽부터 빠짐없이 찾는다. 사람마다 머리 위치와 보호구를 따로 본다 — 머리(안전모 hardhat / 일반 모자·두건 cap / 맨머리 none), 턱끈, 안전대(착용·체결), 위치(높이·단부·하부).',
+    '    한 사람이라도 안전모가 아닌 모자를 쓰거나 맨머리이면 보호구 미착용 표지(G16)를 고르고, x,y는 그 사람의 머리에 찍는다.',
+    ' ② 설비·구조물: 단부·개구부, 비계 발판·난간, 거푸집·동바리, 자재·공구, 장비·인양물, 전선·분전반을 차례로 본다.',
+    ' ③ 표지 선택: ①·②에서 확인한 사실로만 표지를 고른다.',
+    '',
+    '위치(x,y) 규칙',
+    ' - 두 번째 이미지가 있으면 같은 사진에 10×10 격자를 그린 것이다(가로 A~J, 세로 1~10, 한 칸 = 10 %). 격자를 보고 좌표를 정한다.',
+    ' - x,y 는 위험을 보여 주는 바로 그 대상(해당 사람의 머리·몸통, 개구부의 중심, 난간이 빠진 구간, 발판이 없는 지점 등)의 중심이다. 장면 중앙이나 빈 공간을 찍지 않는다.',
+    ' - 서로 다른 표지가 같은 대상을 가리키면 2~4 %씩 떨어뜨려 번호가 겹치지 않게 한다.',
+    '',
     '출력 규칙',
     '1. JSON 하나만 출력한다. 코드펜스·설명문을 붙이지 않는다.',
     '2. 형식: {"domain":"elec"|"gen","scene":[ko' + (foreign ? ',' + 'foreign' : '') + '],',
     '   "hits":[{"id":"G01","x":46,"y":26,"conf":0.9,"evidence":[ko' + (foreign ? ',foreign' : '') + ']}],',
-    '   "extra":[[ko' + (foreign ? ',foreign' : '') + ']]}',
+    '   "persons":[{"x":20,"y":22,"head":"hardhat"|"cap"|"none","harness":"clipped"|"unclipped"|"none"|"unknown"}],',
+    '   "extra":[{"t":[ko' + (foreign ? ',foreign' : '') + '],"x":50,"y":60}]}',
     '3. x,y 는 해당 위험이 보이는 위치의 사진 좌표(%): 왼쪽 위 0,0 — 오른쪽 아래 100,100.',
     '4. conf 는 0~1. 0.5 미만이면 hits 에 넣지 않는다.',
     '5. evidence 는 사진에서 본 것을 한 문장으로(한국어 40자 이내).',
     '6. scene 은 작업 장면 요약 한 문장(한국어 60자 이내).',
-    '7. extra 는 지식베이스에 없는 추가 위험을 한 문장씩 최대 3개. 없으면 [].',
+    '7. extra 는 지식베이스 표지로 표현할 수 없는 추가 위험만 한 문장씩 최대 3개(x,y 포함). 표지와 같은 내용은 넣지 않는다. 없으면 [].',
+    '7-1. persons 는 사진 속 모든 사람(최대 10명)의 머리 위치와 보호구 상태. 사람이 없으면 [].',
     '8. domain 은 사진의 주된 작업으로 정한다. 전기설비가 작업 대상이 아니면 "gen".',
     foreign
       ? '9. ko 다음 요소는 같은 내용의 ' + foreign + ' 번역이다. 두 요소를 반드시 함께 넣는다.'
@@ -122,6 +135,8 @@ module.exports = async function handler(req, res) {
   if (!img) return res.status(400).json({ ok: false, reason: 'bad_image' });
   if (img.b64.length * 0.75 > MAX_BYTES) return res.status(413).json({ ok: false, reason: 'too_large' });
 
+  var grid = parseDataUrl(body.grid);
+  if (grid && grid.b64.length * 0.75 > MAX_BYTES) grid = null;
   var lang = ['en', 'zh', 'vi', 'uz'].indexOf(body.lang) >= 0 ? body.lang : 'ko';
   var site = body.site || {};
   var userText = [
@@ -135,12 +150,14 @@ module.exports = async function handler(req, res) {
     // Sonnet 5.5 는 temperature 등 샘플링 값을 기본값 외로 주면 400 을 돌려준다 → 보내지 않는다.
     // thinking 은 끌 수 없으므로 effort 를 낮춰 지연을 줄이고, 생각 토큰까지 감안해 max_tokens 를 넉넉히 둔다.
     max_tokens: 8000,
-    output_config: { effort: 'low' },
+    output_config: { effort: 'medium' },
     system: systemPrompt(lang),
     messages: [{ role: 'user', content: [
       { type: 'image', source: { type: 'base64', media_type: img.mime, data: img.b64 } },
+    ].concat(grid ? [{ type: 'text', text: '아래는 같은 사진에 10×10 격자(가로 A~J, 세로 1~10)를 그린 위치 참고용 이미지이다.' },
+      { type: 'image', source: { type: 'base64', media_type: grid.mime, data: grid.b64 } }] : []).concat([
       { type: 'text', text: userText },
-    ] }],
+    ]) }],
   };
 
   var ctrl = new AbortController();
@@ -174,14 +191,24 @@ module.exports = async function handler(req, res) {
                evidence: ev.slice(0, 2).map(String) };
     });
     var scene = Array.isArray(out.scene) ? out.scene.slice(0, 2).map(String) : [String(out.scene || '')];
-    var extra = (Array.isArray(out.extra) ? out.extra : []).slice(0, 3).map(function (e) {
-      return (Array.isArray(e) ? e : [String(e)]).slice(0, 2).map(String); });
+    var exRaw = (Array.isArray(out.extra) ? out.extra : []).slice(0, 3);
+    var extra = exRaw.map(function (e) { var t = e && !Array.isArray(e) && typeof e === 'object' ? e.t : e;
+      return (Array.isArray(t) ? t : [String(t || '')]).slice(0, 2).map(String); });
+    var extraXY = exRaw.map(function (e) { return e && typeof e === 'object' && !Array.isArray(e) && isFinite(e.x) && isFinite(e.y) ? [Math.round(clamp(e.x, 3, 97)), Math.round(clamp(e.y, 3, 97))] : null; });
+    // 안전망: 판독한 사람 중 안전모가 아닌 사람이 있는데 보호구 표지(G16)를 빠뜨렸으면 그 사람 머리에 G16을 더한다
+    var persons = (Array.isArray(out.persons) ? out.persons : []).slice(0, 10).filter(function (p) { return p && isFinite(p.x) && isFinite(p.y); });
+    var bare = persons.filter(function (p) { return p.head === 'cap' || p.head === 'none'; });
+    if (bare.length && ids.G16 && !hits.some(function (h) { return h.id === 'G16'; })) {
+      var evk = '근로자 ' + bare.length + '명 안전모 미착용(' + (bare[0].head === 'cap' ? '일반 모자' : '맨머리') + ')';
+      hits.push({ id: 'G16', x: Math.round(clamp(bare[0].x, 3, 97)), y: Math.round(clamp(bare[0].y, 3, 97)), conf: 0.7,
+        evidence: lang === 'ko' ? [evk] : [evk, bare.length + ' worker(s) without a hard hat'] });
+    }
     var domain = out.domain === 'gen' || out.domain === 'elec' ? out.domain : null;
     if (!domain && hits.length) {
       var ng = hits.filter(function (h) { return h.id.charAt(0) === 'G'; }).length;
       domain = ng > hits.length - ng ? 'gen' : 'elec';
     }
-    return res.status(200).json({ ok: true, model: MODEL, lang: lang, domain: domain, hits: hits, scene: scene, extra: extra,
+    return res.status(200).json({ ok: true, model: MODEL, lang: lang, domain: domain, hits: hits, scene: scene, extra: extra, extraXY: extraXY, persons: persons,
       keyFrom: keyFrom, usage: data.usage });
   } catch (e) {
     clearTimeout(timer);

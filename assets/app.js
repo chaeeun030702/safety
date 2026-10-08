@@ -263,23 +263,36 @@ function aiScan(on) {
   var tick = function () { if (t) t.textContent = 'AI 판독 중 · ' + steps[i % steps.length] + ' · ' + Math.round((Date.now() - t0) / 1000) + '초'; };
   tick(); AISCAN = setInterval(function () { if ((Date.now() - t0) % 4000 < 1000) i++; tick(); }, 1000);
 }
+/* 위치 판독을 돕는 격자 사본(10×10, 가로 A~J · 세로 1~10)을 만든다 */
+function gridCopy(src, cb) { var im = new Image(); im.onload = function () { try {
+    var c = document.createElement('canvas'), W0 = im.naturalWidth, H0 = im.naturalHeight; c.width = W0; c.height = H0; var x = c.getContext('2d'); x.drawImage(im, 0, 0);
+    x.lineWidth = Math.max(1, W0 / 600); x.strokeStyle = 'rgba(255,230,0,.85)'; x.fillStyle = 'rgba(255,230,0,.95)'; x.font = 'bold ' + Math.round(Math.min(W0, H0) / 32) + 'px sans-serif';
+    for (var i = 1; i < 10; i++) { x.beginPath(); x.moveTo(W0 * i / 10, 0); x.lineTo(W0 * i / 10, H0); x.moveTo(0, H0 * i / 10); x.lineTo(W0, H0 * i / 10); x.stroke(); }
+    for (i = 0; i < 10; i++) { x.fillText('ABCDEFGHIJ'[i], W0 * (i + 0.38) / 10, H0 * 0.035); x.fillText(String(i + 1), W0 * 0.006, H0 * (i + 0.6) / 10); }
+    cb(c.toDataURL('image/jpeg', 0.8)); } catch (e) { cb(null); } }; im.onerror = function () { cb(null); }; im.src = src; }
 function runRead() {
   var w = RAW(); if (BUSY || !w || !H.photo) { afterRead(false); return; } BUSY = true; var lang = LANG;
+  gridCopy(H.photo, function (grid) { runRead2(w, lang, grid); });
+}
+function runRead2(w, lang, grid) {
   status('<span class="spin"></span> AI가 사진을 판독하는 중입니다… (30~90초)', 'busy');
   aiScan(true);
   var ctrl = window.AbortController ? new AbortController() : null, tm = setTimeout(function () { if (ctrl) ctrl.abort(); }, 125000);
   fetch('api/read', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
-    body: JSON.stringify({ image: H.photo, name: H.fname, lang: lang, key: APIKEY || undefined, site: { kind: $('#m_proc').value, place: $('#m_site').value } }) })
+    body: JSON.stringify({ image: H.photo, grid: grid || undefined, name: H.fname, lang: lang, key: APIKEY || undefined, site: { kind: $('#m_proc').value, place: $('#m_site').value } }) })
     .then(function (r) { return r.json().catch(function () { return { ok: false, reason: 'http_' + r.status }; }); })
     .then(function (j) { clearTimeout(tm); BUSY = false; aiScan(false); if (j && j.ok && ((j.hits && j.hits.length) || (j.extra && j.extra.length))) { applyAI(j, lang); afterRead(true); } else if (j && j.ok) { applyNone(j, lang); afterRead(true); } else { fallback(j && (j.reason || j.error)); afterRead(false); } })
     .catch(function (e) { clearTimeout(tm); BUSY = false; aiScan(false); fallback(e && e.name === 'AbortError' ? 'timeout' : 'network'); afterRead(false); });
 }
 function applyAI(j, lang) {
   var w = RAW(); if (!w) return; H.nohaz = false; var S = w.S; S.sel = []; S.mk = {}; S.src = {}; S.ps = {};
+  S.custom = (S.custom || []).filter(function (c) { return !c.ai; }); // 이전 사진의 AI 추가 위험은 지운다
+  S.custom.forEach(function (c) { S.sel.push(c.id); });
   j.hits.forEach(function (h) { if (!KBI[h.id] || S.sel.indexOf(h.id) >= 0) return; S.sel.push(h.id); S.mk[h.id] = [Math.round(h.x), Math.round(h.y)]; S.src[h.id] = { ai: arr5(h.evidence, lang) }; });
   S.scene = j.scene ? arr5(j.scene, lang) : null;
   var noKbHit = !j.hits || !j.hits.length;
   (j.extra || []).slice(0, 3).forEach(function (x) { var t = Array.isArray(x) ? x[0] : x; if (!t) return; var c = { id: 'C' + (++S.cn), name: String(t), cause: String(t), acts: ['관리감독자가 대책을 적는다'], p: 2, s: 2 }; c.ai = 1; if (Array.isArray(x) && x[1]) c.nm5 = arr5(x, lang); S.custom.push(c); S.sel.push(c.id); });
+  var ais = S.custom.filter(function (q) { return q.ai; }); (j.extraXY || []).forEach(function (xy, k) { if (xy && ais[k]) S.mk[ais[k].id] = xy; });
   TAB = 'gen';
   applyMeta(true); w.renderAll();
   status('🤖 AI 판독 완료 — 위험 표지 <b>' + j.hits.length + '</b>건' + ((j.extra || []).length ? ', 지식베이스 밖 추가 위험 ' + j.extra.length + '건(⑥ 목록)' : '') + ' · ' + esc(j.model || '') + '<br><small>체크리스트에서 더하거나 빼고, 빈도·강도는 평가표에서 고칩니다.</small>' + (noKbHit ? '<br><small>⚠️ 지식베이스 표지가 없어 <b>사전작업허가서·안전포스터는 만들지 않습니다</b>(추가 위험은 위험분석·평가표에만 반영).</small>' : ''), noKbHit ? 'warn' : 'ok');

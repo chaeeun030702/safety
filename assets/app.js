@@ -254,15 +254,25 @@ function onFile(f, cb) {
 function runKw() { var w = RAW(); if (!w) return; w.S.memo = $('#m_memo').value + ' ' + $('#m_proc').value; w.S.fname = H.fname || w.S.fname; w.S.scene = null; w.doKw(); H.nohaz = !w.S.sel.length; applyMeta(true); w.renderAll(); status('🔎 ' + esc(w.S.kwmsg || '키워드 판독 완료'), 'ok'); }
 
 /* ---------- AI 판독 (/api/read) ---------- */
+/* AI 판독 중: 사진 위에 스캔 빔·격자·위험 지점 깜박임과 단계 문구를 돌려 AI가 작업 중임을 보여 준다 */
+var AISCAN = null;
+function aiScan(on) {
+  var d = $('#drop'), t = $('#aiscanT'); if (!d) return; clearInterval(AISCAN); AISCAN = null; d.classList.toggle('reading', !!on);
+  if (!on) return;
+  var steps = ['사진 읽는 중', '사람·설비 찾는 중', '지식베이스 50종 대조', '위험 위치 표시', '근거 문장 정리'], i = 0, t0 = Date.now();
+  var tick = function () { if (t) t.textContent = 'AI 판독 중 · ' + steps[i % steps.length] + ' · ' + Math.round((Date.now() - t0) / 1000) + '초'; };
+  tick(); AISCAN = setInterval(function () { if ((Date.now() - t0) % 4000 < 1000) i++; tick(); }, 1000);
+}
 function runRead() {
   var w = RAW(); if (BUSY || !w || !H.photo) { afterRead(false); return; } BUSY = true; var lang = LANG;
   status('<span class="spin"></span> AI가 사진을 판독하는 중입니다… (20~40초)', 'busy');
+  aiScan(true);
   var ctrl = window.AbortController ? new AbortController() : null, tm = setTimeout(function () { if (ctrl) ctrl.abort(); }, 65000);
   fetch('api/read', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
     body: JSON.stringify({ image: H.photo, name: H.fname, lang: lang, key: APIKEY || undefined, site: { kind: $('#m_proc').value, place: $('#m_site').value } }) })
     .then(function (r) { return r.json().catch(function () { return { ok: false, reason: 'http_' + r.status }; }); })
-    .then(function (j) { clearTimeout(tm); BUSY = false; if (j && j.ok && ((j.hits && j.hits.length) || (j.extra && j.extra.length))) { applyAI(j, lang); afterRead(true); } else if (j && j.ok) { applyNone(j, lang); afterRead(true); } else { fallback(j && (j.reason || j.error)); afterRead(false); } })
-    .catch(function (e) { clearTimeout(tm); BUSY = false; fallback(e && e.name === 'AbortError' ? 'timeout' : 'network'); afterRead(false); });
+    .then(function (j) { clearTimeout(tm); BUSY = false; aiScan(false); if (j && j.ok && ((j.hits && j.hits.length) || (j.extra && j.extra.length))) { applyAI(j, lang); afterRead(true); } else if (j && j.ok) { applyNone(j, lang); afterRead(true); } else { fallback(j && (j.reason || j.error)); afterRead(false); } })
+    .catch(function (e) { clearTimeout(tm); BUSY = false; aiScan(false); fallback(e && e.name === 'AbortError' ? 'timeout' : 'network'); afterRead(false); });
 }
 function applyAI(j, lang) {
   var w = RAW(); if (!w) return; H.nohaz = false; var S = w.S; S.sel = []; S.mk = {}; S.src = {}; S.ps = {};

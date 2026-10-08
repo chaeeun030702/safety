@@ -67,7 +67,7 @@
 <div id="wrap">
 <aside id="side">
  <section class="step"><h3 class="bi" data-ui="s1"></h3>
-  <label class="drop" id="drop"><input type="file" id="file" accept="image/*" hidden><span class="cam">📷</span><span class="bi" data-ui="drop"></span><span id="thumb"></span></label>
+  <label class="drop" id="drop"><input type="file" id="file" accept="image/*" hidden><span class="cam">📷</span><span class="bi" data-ui="drop"></span><span id="thumb"></span><span class="aiscan" id="aiscan" aria-hidden="true"><i class="grid"></i><i class="beam"></i><i class="cn tl"></i><i class="cn tr"></i><i class="cn bl"></i><i class="cn br"></i><i class="dot d1"></i><i class="dot d2"></i><i class="dot d3"></i><b class="lbl"><span class="bot">🤖</span> <span id="aiscanT">AI 판독 중</span></b></span></label>
   <div class="hint bi" data-ui="privacy"></div>
   <div id="rdStat" class="rdstat"></div>
  </section>
@@ -82,13 +82,13 @@
   <button class="sm" onclick="applyMeta()">현장 정보를 문서에 반영</button>
  </section>
  <section class="step"><h3 class="bi" data-ui="s3"></h3>
-  <div class="seg" id="langSeg"><button data-l="ko">한국어만</button><button data-l="en">English</button><button data-l="zh">中文</button><button data-l="vi">Tiếng Việt</button><button data-l="uz">Oʻzbekcha</button></div>
-  <details class="gloss"><summary class="bi" data-ui="glossH"></summary><input id="gq" placeholder="용어 찾기 (예: 감전, 안전대)"><div id="glossBody"></div></details>
- </section>
- <section class="step"><h3 class="bi" data-ui="s4"></h3>
   <div class="seg" id="engSeg"><button data-e="ai" data-ui="engAi"></button><button data-e="kw" data-ui="engKw"></button><button data-e="man" data-ui="engMan"></button></div>
   <div class="hint" id="engHint"></div>
   <div class="dombox"><b class="bi" data-ui="domLab"></b><div class="seg sm3" id="domSeg"><button data-d="auto">자동 판정</button><button data-d="gen">건축·설비 PTW</button></div><div id="domRes" class="domres"></div></div>
+ </section>
+ <section class="step"><h3 class="bi" data-ui="s4"></h3>
+  <div class="seg" id="langSeg"><button data-l="ko">한국어만</button><button data-l="en">English</button><button data-l="zh">中文</button><button data-l="vi">Tiếng Việt</button><button data-l="uz">Oʻzbekcha</button></div>
+  <details class="gloss"><summary class="bi" data-ui="glossH"></summary><input id="gq" placeholder="용어 찾기 (예: 감전, 안전대)"><div id="glossBody"></div></details>
  </section>
  <section class="step"><h3 class="bi" data-ui="s5"></h3>
   <div class="tabs"><button id="tabG" class="on" onclick="setTab('gen')">🏗️ 건축 A01–A23 · 설비 M01–M08</button></div>

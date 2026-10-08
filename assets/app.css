@@ -213,3 +213,24 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 .solbtns{display:flex;gap:6px;margin-top:6px}.solbtns button.sm{margin-top:0}
 #mailTok{display:none}#mailTok.on{display:block}
 
+
+/* AI 사진 판독 중 동적 표시 — 사진 위 스캔 */
+.drop{position:relative;overflow:hidden}
+.aiscan{display:none;position:absolute;inset:0;pointer-events:none;border-radius:8px;background:rgba(0,30,70,.28)}
+.drop.reading .aiscan{display:block}
+.aiscan .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(120,220,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(120,220,255,.18) 1px,transparent 1px);background-size:18px 18px;animation:aigrid 6s linear infinite}
+.aiscan .beam{position:absolute;left:0;right:0;height:28%;top:-28%;background:linear-gradient(180deg,transparent,rgba(80,210,255,.55) 70%,#7fe3ff 100%);box-shadow:0 2px 10px #7fe3ff;animation:aibeam 1.8s cubic-bezier(.45,0,.55,1) infinite}
+.aiscan .cn{position:absolute;width:16px;height:16px;border:3px solid #FFD23F}
+.aiscan .tl{left:6px;top:6px;border-right:0;border-bottom:0}.aiscan .tr{right:6px;top:6px;border-left:0;border-bottom:0}
+.aiscan .bl{left:6px;bottom:6px;border-right:0;border-top:0}.aiscan .br{right:6px;bottom:6px;border-left:0;border-top:0}
+.aiscan .cn{animation:aicn 1.2s ease-in-out infinite alternate}
+.aiscan .dot{position:absolute;width:12px;height:12px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:aidot 1.6s ease-out infinite}
+.aiscan .d1{left:22%;top:34%;animation-delay:.2s}.aiscan .d2{left:64%;top:22%;animation-delay:.8s}.aiscan .d3{left:46%;top:66%;animation-delay:1.3s}
+.aiscan .lbl{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(0,26,64,.88);color:#fff;font-size:12px;padding:4px 10px;border-radius:14px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.aiscan .bot{display:inline-block;animation:aibot 1s ease-in-out infinite}
+@keyframes aibeam{0%{top:-28%}100%{top:100%}}
+@keyframes aigrid{to{background-position:0 18px,18px 0}}
+@keyframes aicn{from{transform:scale(1);opacity:.7}to{transform:scale(1.25);opacity:1}}
+@keyframes aidot{0%{box-shadow:0 0 0 0 rgba(255,77,77,.7);opacity:0}20%{opacity:1}100%{box-shadow:0 0 0 16px rgba(255,77,77,0);opacity:0}}
+@keyframes aibot{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.aiscan *{animation:none!important}.aiscan .beam{top:40%}}

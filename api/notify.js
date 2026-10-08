@@ -29,6 +29,7 @@
 const crypto = require('crypto');
 
 const SITE_URL = 'https://safety-cbnu.vercel.app/'; // 메일 맨 위에 넣는 사이트 링크
+const SMS_URL = 'https://c-safety.vercel.app/'; // 문자(SMS·LMS)에 붙이는 사이트 링크
 // Gmail 로 보낼 수 있는 계정 허용 목록. 환경변수 NOTIFY_GMAIL_USERS(쉼표 구분)로 바꾼다
 const GMAIL_ALLOWED = ((process.env.NOTIFY_GMAIL_USERS || '').trim() || '').toLowerCase().split(',').map((x) => x.trim()).filter(Boolean);
 const MAX_PDF = 2.8 * 1000 * 1000;   // PDF base64 문자 수
@@ -144,7 +145,7 @@ async function sendSms(to, site, counts, cred) {
   const date = new Date().toISOString(), salt = crypto.randomBytes(16).toString('hex');
   const sig = crypto.createHmac('sha256', secret).update(date + salt).digest('hex');
   // 문자는 KS X 1001(EUC-KR) 범위만 안전하므로 긴 대시(—, U+2014)는 모양이 같은 가로선(―, U+2015)으로 바꾼다
-  const text = (titleOf(site, counts) + '\n' + SITE_URL).replace(/\u2014/g, '\u2015');
+  const text = (titleOf(site, counts) + '\n' + SMS_URL).replace(/\u2014/g, '\u2015');
   const long = Array.from(text).reduce((n, ch) => n + (ch.charCodeAt(0) > 127 ? 2 : 1), 0) > 90; // 한글 2바이트, 90바이트 초과 시 LMS
   const messages = to.map((n) => Object.assign({ to: n, from, text, type: long ? 'LMS' : 'SMS' }, long ? { subject: '[경고] 위험성평가표' } : {}));
   const r = await fetch('https://api.solapi.com/messages/v4/send-many/detail', {

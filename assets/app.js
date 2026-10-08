@@ -411,11 +411,12 @@ function mkPrompt() {
   var p;
   if ($('#gmode').value === 'card') {
     p = 'Create ONE photorealistic image, landscape 4:3, that looks like a real documentary photo taken at a Korean construction site.\n'
-      + 'It is the GOOD-PRACTICE card of a multilingual safety poster.\n'
+      + 'It is the GOOD-PRACTICE photo of a multilingual safety poster.\n'
+      + 'Framing: WIDE-ANGLE establishing shot (about 24 mm lens), camera set back from the work. The workers and the safe practice fill only about one third of the frame; the rest shows a broad, busy construction site around them — building frame or concrete structure under construction, scaffolding with guardrails, a tower crane in the background, stacked materials, temporary site fences and other workers working safely at a distance. Plenty of sky and background, deep focus so the surroundings stay sharp.\n'
       + 'Scene: ' + enOf('good_t') + ' — ' + enOf('good_c') + '\n'
-      + 'Setting: similar to the attached site photo, but every hazard below is CONTROLLED and the work is done safely:\n- ' + items.join('\n- ') + '\n'
+      + 'Setting: similar to the attached site photo (same type of structure and work), but every hazard below is CONTROLLED and the work is done safely:\n- ' + items.join('\n- ') + '\n'
       + 'Workers wear white hard hats with chin straps fastened, hi-vis vests and the right PPE for the task. Faces must not be identifiable (side or back view).\n'
-      + 'Natural daylight, sharp, print quality. No readable text, no letters, no logos, no watermark, no blood.';
+      + 'Natural daylight, realistic colors, sharp, print quality, looks like a real photo for a printed safety poster. No readable text, no letters, no logos, no watermark, no blood.';
   } else {
     p = 'Create a realistic, print-quality Korean construction SAFETY POSTER image, portrait A3 ratio (1:1.414). Real photographs, clean layout, bold Korean typography. Render ALL Korean text exactly as written. Do NOT draw any logo; leave an EMPTY navy square at top-right for a university logo.\n'
       + '1) Navy header: yellow warning triangle + "안전제일", slogan "' + (g.c_slogan || '') + '".\n'

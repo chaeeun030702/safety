@@ -486,7 +486,7 @@ try { RSVG = JSON.parse(localStorage.getItem('cbnu_rowsvg') || '{}') || {}; } ca
 function rsvgPut(k, v) { RSVG[k] = v; try { var ks = Object.keys(RSVG); while (ks.length > 60) delete RSVG[ks.shift()]; localStorage.setItem('cbnu_rowsvg', JSON.stringify(RSVG)); } catch (e) {} }
 function rowSvgAuto(auto) {
   var f = W('pstBox'); if (!f || !f.hostRowSvg || !H.rid) return;
-  if (auto && !APIKEY) return;
+  if (auto && !APIKEY && SERVERKEY !== true) return;
   var g = f.hostGet(), sig = H.rimgSig, n = f.document.querySelectorAll('.rules .ricon').length || 6, todo = [];
   for (var i = 0; i < n; i++) { var row = f.document.querySelectorAll('.rules .ricon')[i].closest('.row'); if (row && row.style.display === 'none') continue;
     var k = H.rid[i]; if (!k || H.rimg[i] || RSVGBUSY[k]) continue; if (auto && RSVG[k]) continue; todo.push(i); }

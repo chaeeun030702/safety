@@ -812,7 +812,7 @@ function notifyGo() {
   ['m_site', 'm_proc', 'm_by'].forEach(function (k) { $('#' + k).addEventListener('change', function () { applyMeta(); }); });
   $('#m_date').value = (function () { var d = new Date(); return d.getFullYear() + '. ' + (d.getMonth() + 1) + '. ' + d.getDate() + '.'; })();
   document.body.classList.add('nodoc');
-  applyUI(); initFrames(); probe();
+  applyUI(); initFrames(); probe(); notifyProbe(); connInit(); solRender();
   try { if (localStorage.getItem('cbnu_sidehide') === '1') sideToggle(true); } catch (e) {}
   window.addEventListener('resize', fitMain); fitMain(); bindZoom(document); $('#main').addEventListener('dblclick', function (e) { if (e.target === this || e.target.id === 'docsBox') zoomFit(); });
   if (window.ResizeObserver) new ResizeObserver(fitMain).observe($('#docs')); // 문서 높이가 바뀌면 스크롤 범위를 맞춘다

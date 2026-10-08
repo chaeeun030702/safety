@@ -15,7 +15,7 @@ const KB = require('../data/indicators.json');
 
 const LANG_NAME = { ko: '한국어', en: 'English', zh: '中文(简体)', vi: 'Tiếng Việt', uz: "O'zbek" };
 const MAX_BYTES = 5 * 1024 * 1024;
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-5-5';
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5';
 // 워크스페이스에 묶이지 않은 키(sk-ant-usr-…)는 anthropic-workspace-id 헤더가 필요하다
 const WORKSPACE = process.env.ANTHROPIC_WORKSPACE_ID || '';
 

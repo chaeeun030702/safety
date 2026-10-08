@@ -358,7 +358,7 @@ function splitActs(arr) { var parts = arr.map(function (s, i) { var re = (i === 
 function lawNums(rows) { var out = []; rows.forEach(function (r) { var k = KBI[r.id]; if (!k) return; var t = String(k.law).split('/')[0], re = /제(\d+)조(의(\d+))?/g, m;
   while ((m = re.exec(t))) { var pre = t.slice(0, m.index); if (pre.lastIndexOf('산업안전보건법') > pre.lastIndexOf('규칙')) continue; var a = m[1] + (m[3] ? '의' + m[3] : ''); if (out.indexOf(a) < 0) out.push(a); } }); return out.slice(0, 8); }
 var GCARD = { b1: 'samples/row/b1_card.jpg' }; // 표본별 ChatGPT 실사 ‘올바른 작업’ 카드
-var ROWIMG = { G02_bad: 1, G01_bad: 1, G21_bad: 1, G02_good: 1, G01_good: 1, G21_good: 1 }; // samples/row/ 에 저장된 ChatGPT 실사 행 사진(표지별)
+var ROWIMG = {}; // 행 그림은 모두 Claude API(/api/rowsvg)가 항목별로 그린다 — 실사 사진 기본값은 쓰지 않음 // samples/row/ 에 저장된 ChatGPT 실사 행 사진(표지별)
 function rowImg(id, ok) { var k = id + (ok ? '_good' : '_bad'); return ROWIMG[k] ? 'samples/row/' + k + '.jpg' : null; }
 function posterData(rows, kind) {
   var kbRows = rows.filter(function (r) { return !r.cust && KBI[r.id]; }).sort(function (a, b) { return b.v - a.v || a.no - b.no; });
@@ -395,7 +395,7 @@ function syncPoster() {
   }
   H.rid = pd ? pd.rid : ['e2_d0', 'e2_d1', 'e2_d2', 'e2_m0', 'e2_m1', 'e2_m2'];
   if (H.rimgSig !== sig) { H.rimg = {}; if (pd && pd.rimg) pd.rimg.forEach(function (u, i) { if (u) H.rimg[i] = u; });
-    (H.rid || []).forEach(function (k, i) { if (!H.rimg[i] && k && ROWCACHE[k]) H.rimg[i] = ROWCACHE[k]; }); } H.rimgSig = sig;
+  } H.rimgSig = sig;
   Object.keys(H.rimg || {}).forEach(function (i) { f.hostRowImg(+i, H.rimg[i], i >= 3); });
   setTimeout(function () { fitFrame('pstBox'); fitMain(); mkPrompt(); }, 350);
   var nrow = f.document.querySelectorAll('.rules .ricon').length || 6;
@@ -496,13 +496,13 @@ function rowSvgAuto(auto) {
   todo.forEach(function (i) {
     var ok = i >= 3, kk = ok ? 'm' + (i - 3) : 'd' + i, k = H.rid[i], en = (f.STR && f.STR[kk + '_t'] || {}).en || '';
     RSVGBUSY[k] = 1;
-    fetch('api/rowsvg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ t: g[kk + '_t'], c: g[kk + '_c'], en: en, ok: ok }], key: APIKEY || undefined }) })
-      .then(function (r) { return r.json(); }).then(function (j) {
-        delete RSVGBUSY[k];
-        if (j && j.ok && j.svgs && j.svgs[0]) { rsvgPut(k, j.svgs[0]); if (H.rimgSig === sig && !H.rimg[i]) f.hostRowSvg(i, j.svgs[0], ok); }
-        else fail.push((ok ? '반드시' : '위험') + ((i % 3) + 1) + ':' + ((j && j.reason) || '?'));
-      }).catch(function () { delete RSVGBUSY[k]; fail.push(String(i + 1) + ':network'); })
-      .then(function () { if (--left) return; $('#gmsg').textContent = fail.length ? 'Claude 그림 일부 실패(' + fail.join(', ') + ')' + (fail.join().indexOf('key') >= 0 ? ' — 왼쪽 ⑧ Claude API 키를 확인하세요.' : '') : '✓ Claude가 행 그림 ' + todo.length + '장을 그렸습니다 (' + Math.round((Date.now() - t0) / 1000) + '초). 같은 표지는 다음부터 바로 쓰입니다.'; });
+    var call = function (tries) { return fetch('api/rowsvg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ t: g[kk + '_t'], c: g[kk + '_c'], en: en, ok: ok }], key: APIKEY || undefined }) })
+      .then(function (r) { return r.json(); }).then(function (j) { if ((!j || !j.ok) && tries > 0 && !(j && /key/.test(j.reason || ''))) return new Promise(function (res) { setTimeout(res, 1500 + Math.random() * 2000); }).then(function () { return call(tries - 1); }); return j; }); };
+    call(2).then(function (j) { return j; }, function () { return null; }).then(function (j) { return { json: function () { return j; } }; }).then(function (r) { return r.json(); }).then(function (j) {
+      delete RSVGBUSY[k];
+      if (j && j.ok && j.svgs && j.svgs[0]) { rsvgPut(k, j.svgs[0]); if (H.rimgSig === sig && !H.rimg[i]) f.hostRowSvg(i, j.svgs[0], ok); }
+      else fail.push((ok ? '반드시' : '위험') + ((i % 3) + 1) + ':' + ((j && j.reason) || 'network'));
+    }).then(function () { if (--left) return; $('#gmsg').textContent = fail.length ? 'Claude 그림 일부 실패(' + fail.join(', ') + ') — 아래 ‘🎨 Claude 자동 생성’을 다시 누르세요.' : '✓ Claude가 행 그림 ' + todo.length + '장을 그렸습니다 (' + Math.round((Date.now() - t0) / 1000) + '초). 같은 표지는 다음부터 바로 쓰입니다.'; });
   });
 }
 function rowAuto(auto) {

@@ -28,7 +28,7 @@
 // ─────────────────────────────────────────────────────────────────────
 const crypto = require('crypto');
 
-const SITE_URL = 'https://safety-cbnu.vercel.app/'; // 메일 맨 위에 넣는 사이트 링크
+const SITE_URL = 'https://c-safety.vercel.app/'; // 메일 맨 위에 넣는 사이트 링크
 const SMS_URL = 'https://c-safety.vercel.app/'; // 문자(SMS·LMS)에 붙이는 사이트 링크
 // Gmail 로 보낼 수 있는 계정 허용 목록. 환경변수 NOTIFY_GMAIL_USERS(쉼표 구분)로 바꾼다
 const GMAIL_ALLOWED = ((process.env.NOTIFY_GMAIL_USERS || '').trim() || '').toLowerCase().split(',').map((x) => x.trim()).filter(Boolean);

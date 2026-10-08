@@ -643,7 +643,7 @@ function ntokClear() { NTOKEN = ''; try { localStorage.removeItem('cbnu_ntok'); 
 /* ---------- Claude 아티팩트 버전: Gmail 커넥터로 메일 발송 ----------
    claude.ai 아티팩트로 열렸을 때만(window.claude.use('mcp')가 열릴 때) 켜진다. 서버(/api/notify)·발송 토큰 없이
    로그인한 본인의 Gmail 커넥터로 직접 보낸다. 문자·AI 사진 판독·저장·인쇄·카메라는 아티팩트에서 쓸 수 없어 숨긴다. */
-var SITE_URL = location.origin + '/';
+var SITE_URL = 'https://c-safety.vercel.app/'; // 메일·문자에 붙이는 사이트 링크
 var CMCP = null;
 var IN_ART = !!(window.claude && typeof window.claude.use === 'function'); // 아티팩트 뷰어 안이면 스크립트보다 먼저 window.claude 가 있다
 var CONN = IN_ART ? 0 : -1;                                                    // 0 연결 중 · 1 Gmail 커넥터 사용 가능 · -1 아티팩트 아님/사용 불가
@@ -849,7 +849,7 @@ function notifyGo() {
       .then(function () { NBUSY = false; });
     return;
   }
-  var body = { token: gm ? undefined : tok, gmail: gm || undefined, solapi: cred, channel: NCH, to: list, counts: cnt, link: location.origin + '/', site: { name: $('#m_site').value, proc: $('#m_proc').value, date: $('#m_date').value, by: $('#m_by').value } };
+  var body = { token: gm ? undefined : tok, gmail: gm || undefined, solapi: cred, channel: NCH, to: list, counts: cnt, link: SITE_URL, site: { name: $('#m_site').value, proc: $('#m_proc').value, date: $('#m_date').value, by: $('#m_by').value } };
   if (mail) { try { body.sheet = w.sheetHtml(); } catch (e) { err.textContent = '분석 sheet를 만들지 못했습니다.'; return; } }
   var title = ntitle(cnt), name = mail ? '메일' : '문자';
   try { localStorage.setItem(mail ? 'cbnu_nsel_email' : 'cbnu_nsel_sms', JSON.stringify(picked)); } catch (e) {}

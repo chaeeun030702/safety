@@ -292,7 +292,7 @@ function renderKey() { var e = $('#keyStat'); if (!e) return;
   else if (SERVERKEY === false) { e.textContent = '서버에도 키가 없습니다 — AI 판독 대신 키워드 판독을 씁니다'; e.className = 'keystat warn'; }
   else { e.textContent = '키 상태 확인 중…'; e.className = 'keystat'; } }
 function keySave() { var v = ($('#apiKey').value || '').trim(); if (!v) return; if (!/^sk-ant-/.test(v)) { $('#keyStat').textContent = 'sk-ant- 로 시작하는 키를 넣으세요'; $('#keyStat').className = 'keystat warn'; return; }
-  APIKEY = v; try { localStorage.setItem('cbnu_key', v); } catch (e) {} $('#apiKey').value = ''; renderKey(); if (H.photo && !H.sample && ENG === 'ai') runRead(); }
+  APIKEY = v; try { localStorage.setItem('cbnu_key', v); } catch (e) {} $('#apiKey').value = ''; renderKey(); if (H.photo && !H.sample && ENG === 'ai') runRead(); setTimeout(function () { rowSvgAuto(true); }, 500); }
 function keyClear() { APIKEY = ''; try { localStorage.removeItem('cbnu_key'); } catch (e) {} renderKey(); }
 function probe() { fetch('api/read').then(function (r) { return r.json(); }).then(function (j) { SERVERKEY = !!(j && j.key); renderKey(); }).catch(function () { SERVERKEY = false; renderKey(); }); }
 
@@ -398,7 +398,9 @@ function syncPoster() {
     (H.rid || []).forEach(function (k, i) { if (!H.rimg[i] && k && ROWCACHE[k]) H.rimg[i] = ROWCACHE[k]; }); } H.rimgSig = sig;
   Object.keys(H.rimg || {}).forEach(function (i) { f.hostRowImg(+i, H.rimg[i], i >= 3); });
   setTimeout(function () { fitFrame('pstBox'); fitMain(); mkPrompt(); }, 350);
-  if (OKEY && !ROWBUSY) { var nrow = f.document.querySelectorAll('.rules .ricon').length || 6, miss = 0; for (var q = 0; q < nrow; q++) if (!H.rimg[q]) miss++; if (miss) setTimeout(function () { rowAuto(true); }, 800); }
+  var nrow = f.document.querySelectorAll('.rules .ricon').length || 6;
+  for (var q = 0; q < nrow; q++) { var rk = H.rid && H.rid[q]; if (!H.rimg[q] && rk && RSVG[rk]) f.hostRowSvg(q, RSVG[rk], q >= 3); }
+  setTimeout(function () { rowSvgAuto(true); }, 600);
 }
 
 /* ---------- ChatGPT 추가작업 ---------- */
@@ -478,6 +480,31 @@ function rowPrompt(i, g, f) {
 var ROWBUSY = false, ROWCACHE = {}; // 표지별 실사 행 사진 캐시(이 브라우저) — 같은 표지는 다시 생성하지 않는다
 try { ROWCACHE = JSON.parse(localStorage.getItem('cbnu_rowimg') || '{}') || {}; } catch (e) { ROWCACHE = {}; }
 function rowCachePut(k, v) { if (!k) return; ROWCACHE[k] = v; try { var ks = Object.keys(ROWCACHE); while (ks.length > 40) { delete ROWCACHE[ks.shift()]; } localStorage.setItem('cbnu_rowimg', JSON.stringify(ROWCACHE)); } catch (e) {} }
+/* ---------- 포스터 행 그림: 실사 사진이 없는 행은 Claude API(/api/rowsvg)가 항목별 삽화(SVG)를 실시간으로 그린다 ---------- */
+var RSVG = {}, RSVGBUSY = {};
+try { RSVG = JSON.parse(localStorage.getItem('cbnu_rowsvg') || '{}') || {}; } catch (e) { RSVG = {}; }
+function rsvgPut(k, v) { RSVG[k] = v; try { var ks = Object.keys(RSVG); while (ks.length > 60) delete RSVG[ks.shift()]; localStorage.setItem('cbnu_rowsvg', JSON.stringify(RSVG)); } catch (e) {} }
+function rowSvgAuto(auto) {
+  var f = W('pstBox'); if (!f || !f.hostRowSvg || !H.rid) return;
+  if (auto && !APIKEY) return;
+  var g = f.hostGet(), sig = H.rimgSig, n = f.document.querySelectorAll('.rules .ricon').length || 6, todo = [];
+  for (var i = 0; i < n; i++) { var row = f.document.querySelectorAll('.rules .ricon')[i].closest('.row'); if (row && row.style.display === 'none') continue;
+    var k = H.rid[i]; if (!k || H.rimg[i] || RSVGBUSY[k]) continue; if (auto && RSVG[k]) continue; todo.push(i); }
+  if (!todo.length) { if (!auto) $('#gmsg').textContent = '모든 행에 실사 사진 또는 Claude 그림이 들어 있습니다.'; return; }
+  var t0 = Date.now(), left = todo.length, fail = [];
+  $('#gmsg').textContent = '🎨 Claude가 행 그림 ' + todo.length + '장을 그리는 중…';
+  todo.forEach(function (i) {
+    var ok = i >= 3, kk = ok ? 'm' + (i - 3) : 'd' + i, k = H.rid[i], en = (f.STR && f.STR[kk + '_t'] || {}).en || '';
+    RSVGBUSY[k] = 1;
+    fetch('api/rowsvg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ t: g[kk + '_t'], c: g[kk + '_c'], en: en, ok: ok }], key: APIKEY || undefined }) })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        delete RSVGBUSY[k];
+        if (j && j.ok && j.svgs && j.svgs[0]) { rsvgPut(k, j.svgs[0]); if (H.rimgSig === sig && !H.rimg[i]) f.hostRowSvg(i, j.svgs[0], ok); }
+        else fail.push((ok ? '반드시' : '위험') + ((i % 3) + 1) + ':' + ((j && j.reason) || '?'));
+      }).catch(function () { delete RSVGBUSY[k]; fail.push(String(i + 1) + ':network'); })
+      .then(function () { if (--left) return; $('#gmsg').textContent = fail.length ? 'Claude 그림 일부 실패(' + fail.join(', ') + ')' + (fail.join().indexOf('key') >= 0 ? ' — 왼쪽 ⑧ Claude API 키를 확인하세요.' : '') : '✓ Claude가 행 그림 ' + todo.length + '장을 그렸습니다 (' + Math.round((Date.now() - t0) / 1000) + '초). 같은 표지는 다음부터 바로 쓰입니다.'; });
+  });
+}
 function rowAuto(auto) {
   var f = W('pstBox'), photo = H.photo || (H.orig && H.orig.photo); if (!f || !f.hostRowImg || !photo) { $('#gmsg').textContent = '먼저 현장사진을 올리거나 표본을 고르세요.'; return; }
   var g = f.hostGet(), btn = $('#rAuto'), t0 = Date.now(), n = f.document.querySelectorAll('.rules .ricon').length || 6, done = 0, fail = [];

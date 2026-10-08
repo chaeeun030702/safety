@@ -30,6 +30,10 @@
       "maxDuration": 300,
       "memory": 1024,
       "includeFiles": "api/_ref/**"
+    },
+    "api/rowsvg.js": {
+      "maxDuration": 60,
+      "memory": 512
     }
   }
 }

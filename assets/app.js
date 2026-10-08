@@ -411,12 +411,19 @@ function mkPrompt() {
   var p;
   if ($('#gmode').value === 'card') {
     p = 'Create ONE photorealistic image, landscape 4:3, that looks like a real documentary photo taken at a Korean construction site.\n'
-      + 'It is the GOOD-PRACTICE photo of a multilingual safety poster.\n'
-      + 'Framing: WIDE-ANGLE establishing shot (about 24 mm lens), camera set back from the work. The workers and the safe practice fill only about one third of the frame; the rest shows a broad, busy construction site around them — building frame or concrete structure under construction, scaffolding with guardrails, a tower crane in the background, stacked materials, temporary site fences and other workers working safely at a distance. Plenty of sky and background, deep focus so the surroundings stay sharp.\n'
-      + 'Scene: ' + enOf('good_t') + ' — ' + enOf('good_c') + '\n'
-      + 'Setting: similar to the attached site photo (same type of structure and work), but every hazard below is CONTROLLED and the work is done safely:\n- ' + items.join('\n- ') + '\n'
-      + 'Workers wear white hard hats with chin straps fastened, hi-vis vests and the right PPE for the task. Faces must not be identifiable (side or back view).\n'
-      + 'Natural daylight, realistic colors, sharp, print quality, looks like a real photo for a printed safety poster. No readable text, no letters, no logos, no watermark, no blood.';
+      + 'It is the GOOD-PRACTICE photo of a multilingual safety poster, so EVERYTHING in the picture must be SAFE and compliant.\n'
+      + 'Camera: 35 mm lens (natural perspective, no fisheye), eye-level, camera set back so the workers fill about half of the frame and the surrounding construction site is clearly visible behind them — structure under construction, scaffolding with complete guardrails, a tower crane in the distance, neatly stacked materials, site fences. Deep focus, natural daylight.\n'
+      + 'Scene (safe practice to show): ' + enOf('good_t') + ' — ' + enOf('good_c') + '\n'
+      + 'Setting: similar to the attached site photo (same type of structure and work).\n'
+      + 'MANDATORY safety rules for every person in the image:\n'
+      + '- Everyone at height stands INSIDE the guardrails on a solid, fully planked platform; nobody stands, climbs, sits or leans outside or over a guardrail or edge.\n'
+      + '- Guardrails are complete (top rail, mid rail, toe board) along every open edge; openings are covered.\n'
+      + '- Full-body harness lanyards are clipped to a lifeline or anchor ABOVE shoulder height.\n'
+      + '- NO work above and below at the same time: nobody is standing or working directly under elevated work or a load; the area below is empty and cordoned off with barrier tape.\n'
+      + '- Workers move between levels only by temporary stairs or a fixed ladder, never by climbing formwork, shoring or scaffold frames.\n'
+      + '- White hard hats with chin straps fastened, hi-vis vests, safety shoes. Faces not identifiable (side or back view).\n'
+      + 'Do NOT show any of these unsafe situations anywhere in the image: ' + items.join('; ') + '; a worker outside a guardrail; people working one above another.\n'
+      + 'Realistic colors, sharp, print quality, looks like a real photo for a printed safety poster. No readable text, no letters, no logos, no watermark, no blood.';
   } else {
     p = 'Create a realistic, print-quality Korean construction SAFETY POSTER image, portrait A3 ratio (1:1.414). Real photographs, clean layout, bold Korean typography. Render ALL Korean text exactly as written. Do NOT draw any logo; leave an EMPTY navy square at top-right for a university logo.\n'
       + '1) Navy header: yellow warning triangle + "안전제일", slogan "' + (g.c_slogan || '') + '".\n'

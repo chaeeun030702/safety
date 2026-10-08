@@ -213,7 +213,3 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 .solbtns{display:flex;gap:6px;margin-top:6px}.solbtns button.sm{margin-top:0}
 #mailTok{display:none}#mailTok.on{display:block}
 
-/* 포스터 섹션 언어 선택 */
-.pstlang{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 8px;flex-wrap:wrap}
-.pstlang b{font-size:12.5px;color:var(--nv)}
-.pstlang .seg{display:inline-flex;border:1px solid #c5d0de;border-radius:6px;overflow:hidden}

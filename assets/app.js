@@ -354,7 +354,7 @@ function themeOf(id) { var k = KBI[id]; return k ? (TGRP[k.dom][k.grp] || (k.dom
 function mainTheme(rows) { var sc = {}; rows.forEach(function (r) { var t = themeOf(r.id); if (t) sc[t] = (sc[t] || 0) + r.v; }); var best = null; Object.keys(sc).forEach(function (t) { if (!best || sc[t] > sc[best]) best = t; }); return best || 'shock'; }
 function short(a, n) { return a.map(function (s) { s = String(s || '').split(' · ')[0].split(' — ')[0].trim(); return s.length > (n || 60) ? s.slice(0, (n || 60) - 1) + '…' : s; }); }
 function splitActs(arr) { var parts = arr.map(function (s, i) { var re = (i === 0 || i === 2) ? /(?=[①②③④⑤⑥⑦⑧⑨])/ : /(?=\(\d\)\s)/; return String(s).split(re).map(function (x) { return x.replace(/^([①-⑨]|\(\d\))\s*/, '').trim(); }).filter(Boolean); });
-  var n = parts[0].length; if (parts.every(function (p) { return p.length === n; })) { var o = []; for (var j = 0; j < n; j++) o.push(parts.map(function (p) { return p[j]; })); return o; } return [arr]; }
+  var n = parts[0].length; if (parts.every(function (p) { return p.length === n; })) { var o = []; for (var j = 0; j < n; j++) o.push(parts.map(function (p) { return p[j]; })); return o; } return [parts.map(function (p) { return p[0]; })]; }
 function lawNums(rows) { var out = []; rows.forEach(function (r) { var k = KBI[r.id]; if (!k) return; var t = String(k.law).split('/')[0], re = /제(\d+)조(의(\d+))?/g, m;
   while ((m = re.exec(t))) { var pre = t.slice(0, m.index); if (pre.lastIndexOf('산업안전보건법') > pre.lastIndexOf('규칙')) continue; var a = m[1] + (m[3] ? '의' + m[3] : ''); if (out.indexOf(a) < 0) out.push(a); } }); return out.slice(0, 8); }
 function posterData(rows, kind) {
@@ -364,7 +364,7 @@ function posterData(rows, kind) {
   var top = kbRows.slice(0, 3), icons = [];
   top.forEach(function (r, i) { var k = KBI[r.id]; tx['d' + i + '_t'] = short(k.tag, 40); tx['d' + i + '_c'] = k.cause; icons[i] = icon(themeOf(r.id), false); });
   var acts = [], used = {}; for (var pass = 0; pass < 3 && acts.length < 3; pass++) top.forEach(function (r) { if (acts.length >= 3) return; var a = splitActs(KBI[r.id].act)[pass]; if (a && !used[a[0]]) { used[a[0]] = 1; acts.push({ a: a, r: r }); } });
-  acts.forEach(function (x, i) { var k = KBI[x.r.id]; tx['m' + i + '_t'] = x.a; tx['m' + i + '_c'] = [x.r.id + ' ' + short(k.tag, 34)[0] + ' 대책', x.r.id + ' — countermeasure', x.r.id + ' 对策', 'Biện pháp ' + x.r.id, x.r.id + ' chorasi']; icons[3 + i] = icon(themeOf(x.r.id), true); });
+  acts.forEach(function (x, i) { var k = KBI[x.r.id]; tx['m' + i + '_t'] = x.a; var am = AMD(x.r.id); tx['m' + i + '_c'] = [am + ' ' + short(k.tag, 34)[0] + ' 대책', am + ' — countermeasure', am + ' 对策', 'Biện pháp ' + am, am + ' chorasi']; icons[3 + i] = icon(themeOf(x.r.id), true); });
   if (top[0]) { var t0 = short(KBI[top[0].id].tag, 34); tx.bad_t = ['현장사진: ' + t0[0], 'Site photo: ' + t0[1], '现场照片：' + t0[2], 'Ảnh hiện trường: ' + t0[3], 'Obyekt surati: ' + t0[4]];
     var lst = kbRows.slice(0, 5); tx.bad_c = [0, 1, 2, 3, 4].map(function (j) { return lst.map(function (r) { return '①②③④⑤⑥⑦⑧⑨'[r.no - 1 > 8 ? 8 : r.no - 1] + ' ' + short(KBI[r.id].tag, 28)[j]; }).join('  '); });
     tx.data = KBI[top[0].id].csi; }
@@ -389,6 +389,8 @@ function syncPoster() {
       code: '2026-CBNU-포스터-' + (k === 'c49' ? '전기' : '일반') + '-' + ymd,
       src: '사진: 왼쪽 실제 현장사진(' + (H.fname || '업로드') + ') · 오른쪽 ChatGPT 이미지 생성(상황 재현) · 통계: CSI 건설사고 사례 재집계, 1단계 분석보고서 · 외국어 병기는 「안전보건용어 400선」 표준 대역어를 우선 적용했고, 400선 외 용어는 연구자가 번역했다. 현장 적용 전 관리감독자가 확인한다.' });
   }
+  if (H.rimgSig !== sig) H.rimg = {}; H.rimgSig = sig;
+  Object.keys(H.rimg || {}).forEach(function (i) { f.hostRowImg(+i, H.rimg[i], i >= 3); });
   setTimeout(function () { fitFrame('pstBox'); fitMain(); mkPrompt(); }, 350);
 }
 
@@ -454,6 +456,33 @@ function gptAuto() {
         else withLogo(j.image, function (img) { var gf = $('#gptFull'); gf.style.display = 'block'; gf.querySelector('img').src = img;
           gf.querySelector('b').textContent = '실사판 포스터 — 자동 생성 (' + j.model + ', 오른쪽 위 충북대학교 심볼 합성)'; end('✓ 실사판 포스터를 아래에 표시했습니다. 이미지를 길게 눌러 저장할 수 있습니다.'); });
       }).catch(function () { end('서버에 연결하지 못했습니다.'); });
+  });
+}
+
+/* ---------- 포스터 ‘위험/반드시’ 6개 행 그림 → ChatGPT 실사 사진 (서버 /api/poster card 모드) ---------- */
+function rowPrompt(i, g, f) {
+  var en = function (k) { var s = f.STR && f.STR[k]; return (s && s.en) || ''; }, ok = i >= 3, k = (ok ? 'm' + (i - 3) : 'd' + i);
+  return 'Create a NEW photorealistic documentary photograph (landscape 3:2) taken at a Korean construction site that resembles the attached site photo. '
+    + 'Natural daylight, realistic colors, sharp focus, print quality. Workers seen from the side or back so no face is identifiable. '
+    + 'Absolutely no text, letters, numbers, signs with writing, logos or watermarks. No blood, no injury. '
+    + 'The photo must clearly and simply show this ONE ' + (ok ? 'SAFE PRACTICE being done correctly' : 'UNSAFE situation (the hazard itself, before any accident)') + ': '
+    + '"' + (g[k + '_t'] || '') + '"' + (en(k + '_t') ? ' (' + en(k + '_t') + ')' : '') + '. Context: ' + (g[k + '_c'] || '') + (en(k + '_c') ? ' (' + en(k + '_c') + ')' : '') + '.';
+}
+function rowAuto() {
+  var f = W('pstBox'), photo = H.photo || (H.orig && H.orig.photo); if (!f || !f.hostRowImg || !photo) { $('#gmsg').textContent = '먼저 현장사진을 올리거나 표본을 고르세요.'; return; }
+  var g = f.hostGet(), btn = $('#rAuto'), t0 = Date.now(), n = f.document.querySelectorAll('.rules .ricon').length || 6, done = 0, fail = [];
+  btn.disabled = true; var tick = setInterval(function () { $('#gmsg').textContent = '⏳ 행 그림 ' + n + '장을 실사 사진으로 만드는 중… ' + done + '/' + n + ' (' + Math.round((Date.now() - t0) / 1000) + '초)'; }, 1000);
+  var fin = function () { clearInterval(tick); btn.disabled = false; $('#gmsg').textContent = fail.length ? '일부 실패(' + fail.join(', ') + ') — 다시 누르면 실패한 행만 다시 만듭니다.' : '✓ 위험·반드시 행 그림 ' + n + '장을 ChatGPT 실사 사진으로 바꿨습니다 (' + Math.round((Date.now() - t0) / 1000) + '초). AI 이미지는 상황 재현이므로 관리감독자가 확인합니다.'; };
+  shrink(photo, 1024, function (small) {
+    if (!small) { clearInterval(tick); btn.disabled = false; return; }
+    var q = []; for (var i = 0; i < n; i++) if (!H.rimg[i]) q.push(i); n = q.length || n; if (!q.length) { H.rimg = {}; for (i = 0; i < 6; i++) q.push(i); n = 6; }
+    var sig = H.rimgSig, work = function () { var i = q.shift(); if (i === undefined) { if (++idle === 3) fin(); return; }
+      fetch('api/poster', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: rowPrompt(i, g, f), photo: small, mode: 'card', key: OKEY || undefined }) })
+        .then(function (r) { return r.json(); }).then(function (j) {
+          if (!j || !j.ok) { fail.push((i < 3 ? '위험' : '반드시') + ((i % 3) + 1) + ':' + ((j && j.error) || '?')); done++; return work(); }
+          shrink(j.image, 640, function (sm) { if (H.rimgSig === sig) { H.rimg[i] = sm; f.hostRowImg(i, sm, i >= 3); } done++; work(); });
+        }).catch(function () { fail.push(String(i + 1) + ':network'); done++; work(); }); }, idle = 0;
+    work(); work(); work();
   });
 }
 

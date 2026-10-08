@@ -70,6 +70,8 @@ body.ko-only .tr{display:none!important}
 .row:last-child{border-bottom:none}
 .ricon{width:36mm;height:27mm;flex:none;border-radius:2mm;overflow:hidden;border:1.5px solid #cbd5e0;position:relative}
 .ricon svg{position:absolute;inset:0;width:100%;height:100%}
+.ricon img.rimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ricon svg.bdg{position:absolute;left:auto;bottom:auto;inset:auto;right:1mm;top:1mm;width:6.5mm;height:6.5mm;z-index:2}
 .ricon .num{position:absolute;left:1mm;top:1mm;width:6.5mm;height:6.5mm;border-radius:50%;color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff;z-index:2}
 .panel.risk .num{background:#B3261E}.panel.must .num{background:#1E7B3A}
 .rt{min-width:0}
@@ -312,6 +314,9 @@ window.hostPST=function(o){o=o||{};capKo();snap();var ai=document.getElementById
 window.hostEdit=function(on){if(!!on!==!!editing)tgl();};
 var _pa=putAi;putAi=function(src){_pa(src);var g=document.getElementById('gph');if(g)g.style.display='none';};
 window.hostSave=function(){saveHtml();};
+window.hostRowImg=function(i,src,ok){var r=document.querySelectorAll('.rules .ricon')[i];if(!r)return;var n=r.querySelector('.num');n=n?n.outerHTML:'<span class="num">'+((i%3)+1)+'</span>';
+ var b=ok?'<svg class="bdg" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1E7B3A" stroke="#fff" stroke-width="1.5"/><path d="M7,14 l5,5 l9,-10" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':'<svg class="bdg" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#B3261E" stroke="#fff" stroke-width="1.5"/><path d="M8,8 l12,12 M20,8 l-12,12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>';
+ r.innerHTML=n+'<img class="rimg" alt="" src="'+src+'">'+b;};
 window.hostGet=function(){capKo();var o={};Object.keys(KOT).forEach(function(k){var t=document.createElement('div');t.innerHTML=KOT[k];o[k]=t.textContent;});return o;};
 window.addEventListener('load',function(){try{if(window.parent!==window&&parent.pstReady)parent.pstReady();}catch(e){}});
 })();

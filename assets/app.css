@@ -5,7 +5,7 @@ html,body{margin:0;height:100%}
 html{touch-action:pan-x pan-y} /* 화면 전체 핀치 확대는 막고, 결과 문서 확대는 앱이 직접 처리한다 */
 body{font-family:"Malgun Gothic","맑은 고딕","Noto Sans KR",sans-serif;font-size:13px;color:var(--ink);background:#eef2f7}
 button,input,select,textarea{font:inherit}
-#top{position:fixed;top:0;left:0;right:0;height:60px;z-index:50;background:var(--nv);color:#fff;display:flex;align-items:center;gap:14px;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#top{position:fixed;top:0;left:0;right:0;height:60px;z-index:50;background:#B92555;color:#fff;display:flex;align-items:center;gap:14px;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 #top .stg{flex:none;width:38px;height:38px;border:0;border-radius:8px;background:none;color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px}
 #top .stg:hover{background:rgba(255,255,255,.16)}#top .stg:active{background:rgba(255,255,255,.26)}
 body.sidehide #top .stg .pnl{fill:none}
@@ -18,7 +18,7 @@ body.sidehide #side{display:none}
 #top .lgt span{font-size:8.5px;letter-spacing:1.2px;opacity:.85}
 #top .tt{min-width:0;flex:1;border-left:1px solid rgba(255,255,255,.3);padding-left:14px}
 #top h1{margin:0;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#top h1 .uitr{display:inline;margin-left:8px;font-size:11px;font-weight:500;color:#cfe0f5}
+#top h1 .uitr{display:inline;margin-left:8px;font-size:11px;font-weight:500;color:#f8d7e2}
 #top .st{font-size:11px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #top .st .uitr{display:none}
 #top .tb{display:flex;gap:6px;align-items:center;flex:none}
@@ -163,8 +163,8 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 .kbleg{margin:6px 0 4px;padding:5px 8px;background:#EEF3F9;border-left:3px solid #1F3A5F;border-radius:4px;font-size:11.5px;line-height:1.45;color:#1F3A5F}.kbleg b{display:block;font-size:11px;margin-bottom:1px}.kbleg small{display:block;color:#B00020;font-size:10.5px}
 
 /* 상단 바 발송 버튼 · 알림 */
-#top .gh.alert{background:#B03A2E;border-color:#B03A2E;color:#fff;font-weight:800}
-#top .gh.alert:hover{background:#c0392b}
+#top .gh.alert{background:#8E1238;border-color:#8E1238;color:#fff;font-weight:800;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85)}
+#top .gh.alert:hover{background:#6f0e2c}
 #ntoast{position:fixed;top:68px;right:14px;z-index:60;max-width:min(420px,calc(100vw - 28px));padding:9px 13px;border-radius:7px;background:#334155;color:#fff;font-size:13px;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.3);display:none}
 #ntoast.on{display:block}#ntoast.ok{background:#2E8B57}#ntoast.warn{background:#B03A2E}
 @media print{#ntoast{display:none!important}}

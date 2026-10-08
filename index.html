@@ -83,7 +83,6 @@
  </section>
  <section class="step"><h3 class="bi" data-ui="s3"></h3>
   <div class="seg" id="langSeg"><button data-l="ko">한국어만</button><button data-l="en">English</button><button data-l="zh">中文</button><button data-l="vi">Tiếng Việt</button><button data-l="uz">Oʻzbekcha</button></div>
-  <div class="hint bi" data-ui="langHint"></div>
   <details class="gloss"><summary class="bi" data-ui="glossH"></summary><input id="gq" placeholder="용어 찾기 (예: 감전, 안전대)"><div id="glossBody"></div></details>
  </section>
  <section class="step"><h3 class="bi" data-ui="s4"></h3>
@@ -103,9 +102,7 @@
   <h4 class="bi" data-ui="cuH"></h4>
   <div class="cf"><input id="cName" placeholder="위험요인(표지명)"><input id="cCause" placeholder="원인·유해요인"><textarea id="cAct" placeholder="감소대책 (줄바꿈으로 여러 개)"></textarea>
    <div class="row"><select id="cP"><option value="3">빈도 상(3)</option><option value="2" selected>빈도 중(2)</option><option value="1">빈도 하(1)</option></select><select id="cS"><option value="3" selected>강도 대(3)</option><option value="2">강도 중(2)</option><option value="1">강도 소(1)</option></select><button class="sm" onclick="addCustom()">＋ 추가</button></div>
-   <div id="custList"></div><div class="hint bi" data-ui="cuHint"></div></div>
-  <h4>빈도·강도 조정 · 서명</h4>
-  <div class="hint">빈도·강도는 위험성평가표의 드롭다운으로 바꾸면 위험성·포스터·허가서가 함께 다시 계산됩니다. 서명란과 모든 문구는 상단 ‘편집 모드’에서 고칩니다.</div>
+   <div id="custList"></div></div>
  </section>
  <section class="step"><h3 class="bi" data-ui="s7"></h3>
   <div class="seg" id="outSeg"><button data-o="all" data-ui="outAll"></button><button data-o="ra" data-ui="outRA"></button><button data-o="ptw" data-ui="outPTW"></button><button data-o="pst" data-ui="outPST"></button></div>
@@ -118,7 +115,6 @@
  <section class="step"><h3>⑨ OpenAI API 키 (실사 포스터 생성용 · 선택)</h3>
   <div class="keyrow"><input type="password" id="oKey" autocomplete="off" spellcheck="false" placeholder="sk-… (이 브라우저에만 저장)"><button class="sm" onclick="okeySave()">저장</button><button class="sm" onclick="okeyClear()">삭제</button></div>
   <div class="keystat" id="oKeyStat"></div>
-  <div class="hint">안전포스터 아래 ‘🤖 실사 포스터 자동 생성’에 씁니다. 키는 이 브라우저에만 저장하며, 비워 두면 서버 키(OPENAI_API_KEY)를 씁니다.</div>
  </section>
  <section class="step"><h3>⑩ 발송 설정 (메일·문자)</h3>
   <div class="hint">상단 바의 <b>✉️ 메일 발송</b> · <b>💬 문자 발송</b> 버튼을 누르면 받는 사람을 고르는 창이 뜨고, <b>‘[경고] 현장사진 위험성 분석(위험 N건 · 9이상 M건)’</b>을 메일(분석 sheet 첨부)·문자로 보냅니다.</div>

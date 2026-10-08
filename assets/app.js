@@ -22,7 +22,7 @@ function status(t, c) { var e = $('#rdStat'); e.innerHTML = t; e.className = 'rd
 function applyUI() {
   $$('[data-ui]').forEach(function (e) { var k = e.getAttribute('data-ui'), t = e.classList.contains('bi') || e.closest('.seg') ? UT(k) : '';
     if (e.closest('#top') && k === 'title') t = UT(k);
-    e.innerHTML = esc(U(k)) + (t ? '<small class="uitr">' + esc(t) + '</small>' : ''); });
+    e.innerHTML = esc(U(k)).replace(/\n/g, '<br>') + (t ? '<small class="uitr">' + esc(t) + '</small>' : ''); });
   $('#aiTr').textContent = UT('ai');
   $('#engHint').innerHTML = esc(U('hint_' + ENG)) + (UT('hint_' + ENG) ? '<small class="uitr">' + esc(UT('hint_' + ENG)) + '</small>' : '');
   $$('#langSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === LANG); });

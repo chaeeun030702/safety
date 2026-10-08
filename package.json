@@ -1,9 +1,9 @@
 {
-  "name": "safety",
-  "version": "1.0.0",
+  "name": "cbnu-safety-building",
   "private": true,
-  "description": "건설현장 안전문서 자동생성 플랫폼 (위험성평가표·PTW·안전포스터, 다국어)",
+  "description": "건축·설비 다국어 안전문서 자동생성 플랫폼 — 서버리스 함수(api/)용",
   "engines": {
-    "node": ">=18"
-  }
+    "node": ">=20"
+  },
+  "dependencies": {}
 }

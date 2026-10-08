@@ -1,8 +1,35 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
   "functions": {
     "api/read.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "memory": 512
+    },
+    "api/poster.js": {
+      "maxDuration": 300,
+      "memory": 1024,
+      "includeFiles": "api/_ref/**"
     }
-  },
-  "cleanUrls": false
+  }
 }

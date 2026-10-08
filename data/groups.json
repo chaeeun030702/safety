@@ -1,0 +1,132 @@
+{
+ "order": [
+  "전기",
+  "보호구",
+  "환경",
+  "가공전선",
+  "고소",
+  "관리",
+  "밀폐",
+  "굴착",
+  "화기"
+ ],
+ "orderGen": [
+  "추락",
+  "낙하",
+  "장비",
+  "붕괴",
+  "화기",
+  "밀폐",
+  "보호구",
+  "환경"
+ ],
+ "names": {
+  "전기": [
+   "전기적 위험 표지",
+   "Electrical indicators",
+   "电气性危险标志",
+   "Dấu hiệu nguy hiểm điện",
+   "Elektr xavf belgilari"
+  ],
+  "보호구": [
+   "보호구 표지",
+   "PPE indicators",
+   "保护具标志",
+   "Dấu hiệu PTBVCN",
+   "Himoya vositasi belgilari"
+  ],
+  "환경": [
+   "작업환경 표지",
+   "Environment indicators",
+   "作业环境标志",
+   "Dấu hiệu môi trường",
+   "Ish muhiti belgilari"
+  ],
+  "가공전선": [
+   "가공전선 관련 표지",
+   "Overhead-line indicators",
+   "架空线路相关标志",
+   "Dấu hiệu đường dây trên không",
+   "Havo liniyasi belgilari"
+  ],
+  "고소": [
+   "고소작업 표지",
+   "Work-at-height indicators",
+   "高处作业标志",
+   "Dấu hiệu làm việc trên cao",
+   "Balandlikdagi ish belgilari"
+  ],
+  "밀폐": [
+   "밀폐공간 표지",
+   "Confined-space indicators",
+   "密闭空间标志",
+   "Dấu hiệu không gian kín",
+   "Yopiq joy belgilari"
+  ],
+  "굴착": [
+   "굴착 표지",
+   "Excavation indicators",
+   "挖掘标志",
+   "Dấu hiệu đào đất",
+   "Qazish belgilari"
+  ],
+  "화기": [
+   "화기작업 표지",
+   "Hot-work indicators",
+   "动火作业标志",
+   "Dấu hiệu làm việc có lửa",
+   "Olovli ish belgilari"
+  ],
+  "관리": [
+   "관리적 표지",
+   "Management indicators",
+   "管理性标志",
+   "Dấu hiệu quản lý",
+   "Boshqaruv belgilari"
+  ],
+  "추락": [
+   "추락 위험 표지",
+   "Fall-from-height indicators",
+   "坠落危险标志",
+   "Dấu hiệu nguy cơ ngã cao",
+   "Balandlikdan yiqilish belgilari"
+  ],
+  "낙하": [
+   "낙하·비래 표지",
+   "Falling-object indicators",
+   "落物·飞来物标志",
+   "Dấu hiệu vật rơi",
+   "Tushayotgan jism belgilari"
+  ],
+  "장비": [
+   "건설기계·차량 표지",
+   "Construction machinery and vehicle indicators",
+   "建设机械·车辆标志",
+   "Dấu hiệu máy xây dựng và xe",
+   "Qurilish mashinalari va transport belgilari"
+  ],
+  "붕괴": [
+   "붕괴·무너짐 표지",
+   "Collapse indicators",
+   "坍塌·倒塌标志",
+   "Dấu hiệu sập đổ",
+   "Qulash belgilari"
+  ]
+ },
+ "dom": {
+  "elec": [
+   "전기설비부문 표지 (U01–U19)",
+   "Electrical indicators (U01–U19)",
+   "电气设备部门标志 (U01–U19)",
+   "Dấu hiệu thiết bị điện (U01–U19)",
+   "Elektr uskunalari belgilari (U01–U19)"
+  ],
+  "gen": [
+   "일반작업 표지 (G01–G20)",
+   "General work indicators (G01–G20)",
+   "一般作业标志 (G01–G20)",
+   "Dấu hiệu công việc chung (G01–G20)",
+   "Umumiy ish belgilari (G01–G20)"
+  ]
+ }
+}

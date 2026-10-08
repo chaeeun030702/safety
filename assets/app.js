@@ -26,7 +26,7 @@ function applyUI() {
     e.innerHTML = esc(U(k)).replace(/\n/g, '<br>') + (t ? '<small class="uitr">' + esc(t) + '</small>' : ''); });
   $('#aiTr').textContent = UT('ai');
   $('#engHint').innerHTML = esc(U('hint_' + ENG)) + (UT('hint_' + ENG) ? '<small class="uitr">' + esc(UT('hint_' + ENG)) + '</small>' : '');
-  $$('#langSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === LANG); });
+  $$('#langSeg button,#pstLang button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === LANG); });
   $$('#engSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.e === ENG); });
   $$('#domSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.d === DOMSEL); });
   $$('#outSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.o === OUT); });
@@ -160,7 +160,7 @@ document.addEventListener('click', function (ev) {
   var pin = t.closest && t.closest('[data-pin]'); if (pin && w) { ev.preventDefault(); var id = pin.getAttribute('data-pin'); w.ARM = (w.ARM === id) ? null : id; w.renderPanel(); renderPanel();
     if (w.ARM) { status('📍 <b>' + AMD(id) + '</b> — 오른쪽 위험분석 1면의 사진에서 위치를 클릭하세요.', 'info'); $('#secRA').scrollIntoView({ behavior: 'smooth' }); } return; }
   var del = t.closest && t.closest('[data-del]'); if (del && w) { var id2 = del.getAttribute('data-del'); w.S.custom = w.S.custom.filter(function (c) { return c.id !== id2; }); w.S.sel = w.S.sel.filter(function (x) { return x !== id2; }); delete w.S.mk[id2]; rerender(); return; }
-  var b = t.closest && t.closest('#langSeg button,#engSeg button,#domSeg button,#outSeg button');
+  var b = t.closest && t.closest('#langSeg button,#pstLang button,#engSeg button,#domSeg button,#outSeg button');
   if (b) { if (b.dataset.l) setLang(b.dataset.l); else if (b.dataset.e) setEng(b.dataset.e); else if (b.dataset.d) { DOMSEL = b.dataset.d; applyUI(); renderPanel(); H.sig = {}; scheduleSync(); } else if (b.dataset.o) setOut(b.dataset.o); }
 });
 function addCustom() {

@@ -274,14 +274,16 @@ function gridCopy(src, cb) { var im = new Image(); im.onload = function () { try
     cb(c.toDataURL('image/jpeg', 0.8)); } catch (e) { cb(null); } }; im.onerror = function () { cb(null); }; im.src = src; }
 function runRead() {
   var w = RAW(); if (BUSY || !w || !H.photo) { afterRead(false); return; } BUSY = true; var lang = LANG;
-  gridCopy(H.photo, function (grid) { runRead2(w, lang, grid); });
+  var go = function (src) { if (!src) { BUSY = false; fallback('bad_image'); afterRead(false); return; } H.readImg = src; gridCopy(src, function (grid) { runRead2(w, lang, grid); }); };
+  // 표본 사진은 파일 경로(samples/…)이므로 판독 전에 이미지 데이터(data URL)로 바꾼다
+  if (/^data:image\//.test(H.photo)) go(H.photo); else shrink(H.photo, 1600, function (d) { go(d); });
 }
 function runRead2(w, lang, grid) {
   status('<span class="spin"></span> AI가 사진을 판독하는 중입니다… (30~90초)', 'busy');
   aiScan(true);
   var ctrl = window.AbortController ? new AbortController() : null, tm = setTimeout(function () { if (ctrl) ctrl.abort(); }, 125000);
   fetch('api/read', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
-    body: JSON.stringify({ image: H.photo, grid: grid || undefined, name: H.fname, lang: lang, key: APIKEY || undefined, site: { kind: $('#m_proc').value, place: $('#m_site').value } }) })
+    body: JSON.stringify({ image: H.readImg || H.photo, grid: grid || undefined, name: H.fname, lang: lang, key: APIKEY || undefined, site: { kind: $('#m_proc').value, place: $('#m_site').value } }) })
     .then(function (r) { return r.json().catch(function () { return { ok: false, reason: 'http_' + r.status }; }); })
     .then(function (j) { clearTimeout(tm); BUSY = false; aiScan(false); if (j && j.ok && ((j.hits && j.hits.length) || (j.extra && j.extra.length))) { applyAI(j, lang); if (j.hits && j.hits.length) H.autoGpt = true; afterRead(true); } else if (j && j.ok) { applyNone(j, lang); afterRead(true); } else { fallback(j && (j.reason || j.error)); afterRead(false); } })
     .catch(function (e) { clearTimeout(tm); BUSY = false; aiScan(false); fallback(e && e.name === 'AbortError' ? 'timeout' : 'network'); afterRead(false); });
@@ -483,7 +485,7 @@ function okeySave() { var v = ($('#oKey').value || '').trim(); if (!/^sk-[\w-]{2
 function okeyClear() { OKEY = ''; try { localStorage.removeItem('cbnu_okey'); } catch (e) {} renderOKey(); }
 function shrink(src, max, cb) { var im = new Image(); im.onload = function () { var k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
     var c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
-    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); cb(c.toDataURL('image/jpeg', 0.85)); }; im.onerror = function () { cb(null); }; im.src = src; }
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); cb(c.toDataURL('image/jpeg', 0.85), c.width, c.height); }; im.onerror = function () { cb(null); }; im.src = src; }
 function withLogo(src, cb) { var im = new Image(), lg = new Image(), n = 0;
   var go = function () { if (++n < 2) return; var c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; var x = c.getContext('2d'); x.drawImage(im, 0, 0);
     if (lg.naturalWidth) { var s = Math.round(c.width * 0.13), m = Math.round(c.width * 0.025); x.fillStyle = '#fff'; x.fillRect(c.width - s - m - 6, m - 6, s + 12, s + 12); x.drawImage(lg, c.width - s - m, m, s, s * lg.naturalHeight / lg.naturalWidth); }

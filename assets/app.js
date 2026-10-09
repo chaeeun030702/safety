@@ -283,7 +283,7 @@ function runRead2(w, lang, grid) {
   fetch('api/read', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
     body: JSON.stringify({ image: H.photo, grid: grid || undefined, name: H.fname, lang: lang, key: APIKEY || undefined, site: { kind: $('#m_proc').value, place: $('#m_site').value } }) })
     .then(function (r) { return r.json().catch(function () { return { ok: false, reason: 'http_' + r.status }; }); })
-    .then(function (j) { clearTimeout(tm); BUSY = false; aiScan(false); if (j && j.ok && ((j.hits && j.hits.length) || (j.extra && j.extra.length))) { applyAI(j, lang); afterRead(true); } else if (j && j.ok) { applyNone(j, lang); afterRead(true); } else { fallback(j && (j.reason || j.error)); afterRead(false); } })
+    .then(function (j) { clearTimeout(tm); BUSY = false; aiScan(false); if (j && j.ok && ((j.hits && j.hits.length) || (j.extra && j.extra.length))) { applyAI(j, lang); if (j.hits && j.hits.length) H.autoGpt = true; afterRead(true); } else if (j && j.ok) { applyNone(j, lang); afterRead(true); } else { fallback(j && (j.reason || j.error)); afterRead(false); } })
     .catch(function (e) { clearTimeout(tm); BUSY = false; aiScan(false); fallback(e && e.name === 'AbortError' ? 'timeout' : 'network'); afterRead(false); });
 }
 function applyAI(j, lang) {
@@ -425,6 +425,9 @@ function syncPoster() {
   } H.rimgSig = sig;
   Object.keys(H.rimg || {}).forEach(function (i) { f.hostRowImg(+i, H.rimg[i], i >= 3); });
   setTimeout(function () { fitFrame('pstBox'); fitMain(); mkPrompt(); }, 350);
+  // AI 사진 판독이 끝나면 포스터 오른쪽 이미지를 ChatGPT로 자동 실사화한다(OpenAI 키: ⑨ 또는 서버)
+  if (H.autoGpt) { H.autoGpt = false; if (OKEY || POSTERKEY) setTimeout(function () { var b = $('#gAuto'); if (b && !b.disabled) gptAuto(); }, 900);
+    else $('#gmsg').textContent = 'AI 판독 후 오른쪽 이미지 자동 실사화를 하려면 왼쪽 ⑨에 OpenAI API 키를 저장하세요.'; }
   var nrow = f.document.querySelectorAll('.rules .ricon').length || 6;
   for (var q = 0; q < nrow; q++) { var rk = H.rid && H.rid[q]; if (!H.rimg[q] && rk && RSVG[rk]) f.hostRowSvg(q, RSVG[rk], q >= 3); }
   setTimeout(function () { rowSvgAuto(true); }, 600);
@@ -471,7 +474,8 @@ function onGpt(inp) { var f = inp.files[0]; if (!f) return; var r = new FileRead
   r.readAsDataURL(f); inp.value = ''; }
 
 /* ---------- 실사 포스터 자동 생성 (서버 /api/poster → OpenAI 이미지 API) ---------- */
-var OKEY = '';
+var OKEY = '', POSTERKEY = false;
+fetch('api/poster').then(function (r) { return r.json(); }).then(function (j) { POSTERKEY = !!(j && j.hasKey); }).catch(function () {});
 function renderOKey(warn) { var e = $('#oKeyStat'); if (!e) return; if (warn) { e.textContent = warn; e.className = 'keystat warn'; return; }
   e.textContent = OKEY ? '이 브라우저에 저장된 OpenAI 키 사용 중 (…' + OKEY.slice(-4) + ')' : '입력한 키 없음 — 서버 키(있으면)로 생성'; e.className = 'keystat' + (OKEY ? ' on' : ''); }
 function okeySave() { var v = ($('#oKey').value || '').trim(); if (!/^sk-[\w-]{20,}$/.test(v)) { renderOKey('sk- 로 시작하는 OpenAI API 키를 넣으세요.'); return; }

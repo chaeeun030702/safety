@@ -46,7 +46,7 @@ window.raReady = function () {
   ['m_site_v', 'm_proc_v', 'm_team_v', 'm_basis_v', 'p1s'].forEach(function (k) { H.orig.KO[k] = w.KO[k]; H.orig.STR[k] = w.STR[k] ? JSON.parse(JSON.stringify(w.STR[k])) : null; });
   var sb = w.document.querySelector('#S1 .sub1 .ed'); H.orig.sub = sb ? sb.innerHTML : '';
   H.orig.photo = w.document.getElementById('photo').getAttribute('src');
-  var go = function () { if (H.pending) { var p = H.pending; H.pending = null; p(); } else loadSample('b1'); };
+  var go = function () { if (H.pending) { var p = H.pending; H.pending = null; p(); } else loadSample('b1', true); };
   if (w.document.fonts && w.document.fonts.ready) w.document.fonts.ready.then(go); else go();
 };
 window.ptwReady = function (k) { H.ready[k] = 1; scheduleSync(); };
@@ -213,9 +213,9 @@ function applyMeta(noRender) {
 
 /* ---------- 표본·사진 ---------- */
 function freshState(w) { var S = w.initState(); S.ps = {}; return S; }
-function loadSample(n) {
+function loadSample(n, noAuto) {
   H.nohaz = false;
-  var w = RAW(); if (!w) { H.pending = function () { loadSample(n); }; return; }
+  var w = RAW(); if (!w) { H.pending = function () { loadSample(n, noAuto); }; return; }
   var s = SAMPLES[n]; H.sample = n; H.fname = s.name; H.gpt = s.card || null; H.sig = {}; $('#gptFull').style.display = 'none';
   var S = freshState(w);
   if (s.hits) { S.ph2 = false; S.sel = []; S.mk = {}; S.src = {}; s.hits.forEach(function (h) { S.sel.push(h[0]); S.mk[h[0]] = [h[1], h[2]]; S.src[h[0]] = { ai: h[3] }; });
@@ -225,7 +225,9 @@ function loadSample(n) {
   var im = new Image(); im.onload = function () { H.pw = im.naturalWidth; H.ph = im.naturalHeight; }; im.src = s.photo;
   $('#thumb').innerHTML = '<img src="' + s.photo + '" alt="">'; $('#drop').classList.add('has');
   status(n === 'e2' ? '⚡ 표본 6 — 사진_현장 사진 sample_전기 2 (3단계 판독 결과 10건). 새 사진을 올리면 바뀝니다.' : '🏗️ 표본 ' + n.slice(1) + ' — ' + esc(s.name) + ' (판독 결과 ' + (s.hits || []).length + '건, AI 초안). 새 사진을 올리면 바뀝니다.', 'info');
-  w.hostPhoto(n === 'e2' ? H.orig.photo : s.photo, function () { applyMeta(true); w.setLang(LANG); });
+  w.hostPhoto(n === 'e2' ? H.orig.photo : s.photo, function () { applyMeta(true); w.setLang(LANG);
+    // 표본을 고르면 AI 사진 판독을 바로 돌린다(분석 엔진이 AI이고 키가 있을 때). 판독 전까지는 저장된 판독값을 보여 준다.
+    if (!noAuto && ENG === 'ai' && (APIKEY || SERVERKEY) && H.sample === n) { H.fname = s.name; runRead(); } });
   if (s.poster) { var gf = $('#gptFull'); gf.style.display = 'block'; gf.querySelector('img').src = s.poster;
     gf.querySelector('b').textContent = '실사판 포스터 — ChatGPT 생성 (오른쪽 위 충북대학교 심볼 합성)'; }
 }
@@ -411,6 +413,8 @@ function syncPoster() {
   else {
     pd = posterData(H.rows, k); var marks = [];
     H.rows.forEach(function (r) { var p = w.S.mk[r.id]; if (p) marks.push([p[0], p[1], r.no]); });
+    var dpp = w.declutter ? w.declutter(marks.map(function (m) { return [m[0], m[1]]; }), H.pw || 1600, H.ph || 1200, Math.max(H.pw || 1600, H.ph || 1200) * 0.075) : null;
+    if (dpp) marks.forEach(function (m, k) { m[0] = dpp[k][0]; m[1] = dpp[k][1]; });
     var d = new Date(), ymd = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
     f.hostPST({ texts: pd.texts, icons: pd.icons, theme: pd.theme, nd: pd.nd, nm: pd.nm, photo: H.photo || (H.orig && H.orig.photo), pw: H.pw, ph: H.ph, marks: marks, fname: H.fname, gpt: H.gpt || GCARD[H.sample] || null, lang: LANG,
       code: '2026-CBNU-포스터-' + (k === 'c49' ? '전기' : '일반') + '-' + ymd,

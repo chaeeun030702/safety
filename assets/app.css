@@ -5,19 +5,19 @@ html,body{margin:0;height:100%}
 html{touch-action:pan-x pan-y} /* 화면 전체 핀치 확대는 막고, 결과 문서 확대는 앱이 직접 처리한다 */
 body{font-family:"Malgun Gothic","맑은 고딕","Noto Sans KR",sans-serif;font-size:13px;color:var(--ink);background:#eef2f7}
 button,input,select,textarea{font:inherit}
-#top{position:fixed;top:0;left:0;right:0;height:52px;z-index:50;background:#002A5C;color:#fff;display:flex;align-items:center;gap:14px;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#top{position:fixed;top:0;left:0;right:0;height:60px;z-index:50;background:#002A5C;color:#fff;display:flex;align-items:center;gap:14px;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 #top .stg{flex:none;width:38px;height:38px;border:0;border-radius:8px;background:none;color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px}
 #top .stg:hover{background:rgba(255,255,255,.16)}#top .stg:active{background:rgba(255,255,255,.26)}
 body.sidehide #top .stg .pnl{fill:none}
 body.sidehide #side{display:none}
 @media (pointer:coarse){#top .stg{width:44px;height:44px}}
 #top .lg{display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;flex:none}
-#top .lg img{height:38px;width:auto}
+#top .lg img{height:42px;width:auto}
 #top .lgt{display:flex;flex-direction:column;line-height:1.15}
 #top .lgt b{font-size:13px;font-weight:800;letter-spacing:.5px}
 #top .lgt span{font-size:8.5px;letter-spacing:1.2px;opacity:.85}
 #top .tt{min-width:0;flex:1;border-left:1px solid rgba(255,255,255,.3);padding-left:14px}
-#top h1{margin:0;font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#top h1{margin:0;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #top h1 .uitr{display:inline;margin-left:8px;font-size:11px;font-weight:500;color:#cfe0f5}
 #top .st{font-size:11px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #top .st .uitr{display:none}
@@ -36,7 +36,7 @@ body.sidehide #side{display:none}
 .ddm.open{display:block}
 .ddm button{display:block;width:100%;text-align:left;border:0;background:#fff;padding:9px 12px;cursor:pointer;color:#111}
 .ddm button:hover{background:#eef3fa}
-#wrap{display:flex;height:100vh;padding-top:52px}
+#wrap{display:flex;height:100vh;padding-top:60px}
 #side{width:392px;flex:none;background:#fff;border-right:1px solid #CBD5E1;overflow-y:auto;padding:10px 10px 30px}
 #main{flex:1;background:var(--bg);overflow:auto;padding:12px}
 #docsBox{margin:0 auto;position:relative}
@@ -235,19 +235,10 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 @keyframes aibot{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @media (prefers-reduced-motion:reduce){.aiscan *{animation:none!important}.aiscan .beam{top:40%}}
 
-/* 타이틀 바: 녹색·높이 52px, 작은 제목, 제목 오른쪽 GS건설(충북대와 같은 형식) */
-#top h1{font-size:14.5px}
-#top h1 .uitr{font-size:10px}
-#top .st{font-size:10px}
-#top .lg img{height:36px}
-#top .lgt b{font-size:12.5px}
-#top .lgt span{font-size:8px}
-#top .tt{flex:0 1 auto}
-#top .lg.gs{cursor:pointer;text-decoration:none;border-left:1px solid rgba(255,255,255,.3);padding-left:14px;cursor:pointer}
-#top .tt{margin-right:auto}
+/* 타이틀 바: e-safety.vercel.app 규격(높이 60px·로고 42px·제목 17px·단추 29px) — 색상은 남색 유지 */
+#top .tt{flex:0 1 auto;margin-right:auto}
+#top .lg.gs{cursor:pointer;text-decoration:none;border-left:1px solid rgba(255,255,255,.3);padding-left:14px}
 #top .lg.gs img{height:30px}
-#top .tb .gh{height:21px;font-size:10px;padding:1px 8px;border-radius:11px}
-#top .tb .gh .ic{font-size:10.5px}#top .tb .gh .bl{margin-left:4px}#top .tb .gh .cr{font-size:7px}#top .tb{gap:4px}
 .gh:hover{background:#e3ecf7}
 /* 편집 모드 = 바로 편집 체크 */
 .gh.edchk{gap:6px;border:1.5px solid #1A73E8;color:#1A4F9C;background:#fff;padding:5px 11px;cursor:pointer;user-select:none}

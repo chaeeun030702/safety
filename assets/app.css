@@ -243,7 +243,7 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 #top .lgt b{font-size:12.5px}
 #top .lgt span{font-size:8px}
 #top .tt{flex:0 1 auto}
-#top .lg.gs{border-left:1px solid rgba(255,255,255,.3);padding-left:14px;cursor:default}
+#top .lg.gs{cursor:pointer;text-decoration:none;border-left:1px solid rgba(255,255,255,.3);padding-left:14px;cursor:pointer}
 #top .tt{margin-right:auto}
 #top .lg.gs img{height:30px}
 #top .tb .gh{height:21px;font-size:10px;padding:1px 8px;border-radius:11px}

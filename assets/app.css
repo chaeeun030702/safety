@@ -246,8 +246,8 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 #top .lg.gs{border-left:1px solid rgba(255,255,255,.3);padding-left:14px;cursor:default}
 #top .tt{margin-right:auto}
 #top .lg.gs img{height:30px}
-#top .tb .gh{height:23px;font-size:11px;padding:2px 9px;border-radius:12px}
-#top .tb .gh .ic{font-size:12px}#top .tb .gh .cr{font-size:8px}#top .tb{gap:5px}
+#top .tb .gh{height:21px;font-size:10px;padding:1px 8px;border-radius:11px}
+#top .tb .gh .ic{font-size:10.5px}#top .tb .gh .bl{margin-left:4px}#top .tb .gh .cr{font-size:7px}#top .tb{gap:4px}
 .gh:hover{background:#e3f1e8}
 /* 편집 모드 = 바로 편집 체크 */
 .gh.edchk{gap:6px;border:1.5px solid #1A73E8;color:#1A4F9C;background:#fff;padding:5px 11px;cursor:pointer;user-select:none}

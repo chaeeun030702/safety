@@ -243,7 +243,8 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 #top .lgt b{font-size:12.5px}
 #top .lgt span{font-size:8px}
 #top .tt{flex:0 1 auto}
-#top .lg.gs{border-left:1px solid rgba(255,255,255,.3);padding-left:14px;margin-right:auto;cursor:default}
+#top .lg.gs{border-left:1px solid rgba(255,255,255,.3);padding-left:14px;cursor:default}
+#top .tt{margin-right:auto}
 #top .lg.gs img{height:30px}
 #top .tb .gh{height:23px;font-size:11px;padding:2px 9px;border-radius:12px}
 #top .tb .gh .ic{font-size:12px}#top .tb .gh .cr{font-size:8px}#top .tb{gap:5px}

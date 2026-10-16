@@ -3,7 +3,7 @@ var AMMAP={"G01": "A01", "G02": "A02", "G03": "A03", "G04": "M01", "G05": "A04",
    상태의 기준은 위험분석 프레임(ra.html)의 S 다. 이 파일은 사진·판독·패널을 다루고, 프레임 렌더가 끝날 때마다(onRA)
    허가서와 포스터를 다시 맞춘다. 생성 결과는 초안이며 최종 판단은 관리감독자가 한다. */
 'use strict';
-var LANG = 'zh', ENG = 'ai', OUT = 'all', DOMSEL = 'auto', TAB = 'gen', APIKEY = '', SERVERKEY = null, BUSY = false, EDIT = true;
+var LANG = 'zh', ENG = 'ai', OUT = 'all', DOMSEL = 'auto', TAB = 'gen', APIKEY = '', SERVERKEY = null, BUSY = false, EDIT = false;
 var LIX = { ko: 0, en: 1, zh: 2, vi: 3, uz: 4 };
 var KBI = {}; KB.forEach(function (k) { KBI[k.id] = k; });
 var H = { sample: null, photo: null, pw: 1600, ph: 1164, fname: '', gpt: null, ready: { ra: 0, c49: 0, gen: 0, pst: 0 }, sig: {}, rows: [], pending: null, orig: null, meta: {} };
@@ -108,7 +108,7 @@ window.onRA = function (rows) {
   renderPanel(); setTimeout(function () { fitFrame('raBox'); fitMain(); }, 60); scheduleSync();
 };
 var SYNC_T = null;
-function scheduleSync() { clearTimeout(SYNC_T); SYNC_T = setTimeout(function () { syncPTW(); syncPoster(); if (EDIT) setTimeout(function () { edApply(true); }, 500); }, 220); }
+function scheduleSync() { clearTimeout(SYNC_T); SYNC_T = setTimeout(function () { syncPTW(); syncPoster(); }, 220); }
 
 /* ---------- 분야 판정 ---------- */
 function domAuto() { var S = RAW() ? RAW().S : null; if (!S) return 'n'; var e = 0, g = 0; S.sel.forEach(function (id) { if (id[0] === 'U') e++; else if (id[0] === 'G') g++; }); return e ? 'e' : (g ? 'g' : 'n'); }
@@ -565,12 +565,9 @@ function rowAuto(auto) {
 }
 
 /* ---------- 편집·인쇄·저장 ---------- */
-/* 편집 모드 = '바로 편집': 기본으로 켜 두어 문서 글자를 눌러 바로 고친다. 문서를 다시 만들 때마다 다시 적용한다 */
-function edApply(force) { var w = RAW(), act = document.activeElement; try { if (w && w.tgl && (force || !!w.ed !== EDIT) && !(force && act && act.id === 'raBox')) { if (!!w.ed !== EDIT) w.tgl(); else if (EDIT && w.applyEd) w.applyEd(true); } } catch (e) {}
-  ['c49Box', 'genBox', 'pstBox'].forEach(function (id) { var x = W(id); try { if (x && x.hostEdit) { if (force && act && act.id === id) return; if (EDIT && force) x.hostEdit(false); x.hostEdit(EDIT); } } catch (e) {} });
-  var c = $('#ebc'); if (c) c.checked = EDIT; var b = $('#eb'); if (b) b.classList.toggle('on', EDIT); }
-function edSet(on) { EDIT = !!on; edApply(false); }
-function edAll() { edSet(!EDIT); }
+function edAll() { EDIT = !EDIT; var w = RAW(); if (w && !!w.ed !== EDIT) w.tgl();
+  ['c49Box', 'genBox', 'pstBox'].forEach(function (id) { var x = W(id); try { if (x && x.hostEdit) x.hostEdit(EDIT); } catch (e) {} });
+  var b = $('#eb'); b.classList.toggle('act', EDIT); b.innerHTML = EDIT ? '<span class="ic">✓</span><span class="bl">편집 중</span>' : '<span class="ic">✏️</span><span class="bl">편집 모드</span>'; }
 function frameOf(k) { return k === 'ra' ? 'raBox' : (k === 'pst' ? 'pstBox' : ptwKind() + 'Box'); }
 function printDoc(k) { $$('.ddm').forEach(function (m) { m.classList.remove('open'); }); var x = W(frameOf(k)); try { x.focus(); x.print(); } catch (e) {} }
 /* ---------- 위험성평가표 → Excel(.xlsx) ----------

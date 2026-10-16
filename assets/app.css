@@ -5,7 +5,7 @@ html,body{margin:0;height:100%}
 html{touch-action:pan-x pan-y} /* 화면 전체 핀치 확대는 막고, 결과 문서 확대는 앱이 직접 처리한다 */
 body{font-family:"Malgun Gothic","맑은 고딕","Noto Sans KR",sans-serif;font-size:13px;color:var(--ink);background:#eef2f7}
 button,input,select,textarea{font:inherit}
-#top{position:fixed;top:0;left:0;right:0;height:52px;z-index:50;background:#1F6F3F;color:#fff;display:flex;align-items:center;gap:14px;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#top{position:fixed;top:0;left:0;right:0;height:52px;z-index:50;background:#002A5C;color:#fff;display:flex;align-items:center;gap:14px;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 #top .stg{flex:none;width:38px;height:38px;border:0;border-radius:8px;background:none;color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px}
 #top .stg:hover{background:rgba(255,255,255,.16)}#top .stg:active{background:rgba(255,255,255,.26)}
 body.sidehide #top .stg .pnl{fill:none}
@@ -18,7 +18,7 @@ body.sidehide #side{display:none}
 #top .lgt span{font-size:8.5px;letter-spacing:1.2px;opacity:.85}
 #top .tt{min-width:0;flex:1;border-left:1px solid rgba(255,255,255,.3);padding-left:14px}
 #top h1{margin:0;font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#top h1 .uitr{display:inline;margin-left:8px;font-size:11px;font-weight:500;color:#d6f0de}
+#top h1 .uitr{display:inline;margin-left:8px;font-size:11px;font-weight:500;color:#cfe0f5}
 #top .st{font-size:11px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #top .st .uitr{display:none}
 #top .tb{display:flex;gap:6px;align-items:center;flex:none}
@@ -248,11 +248,11 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 #top .lg.gs img{height:30px}
 #top .tb .gh{height:21px;font-size:10px;padding:1px 8px;border-radius:11px}
 #top .tb .gh .ic{font-size:10.5px}#top .tb .gh .bl{margin-left:4px}#top .tb .gh .cr{font-size:7px}#top .tb{gap:4px}
-.gh:hover{background:#e3f1e8}
+.gh:hover{background:#e3ecf7}
 /* 편집 모드 = 바로 편집 체크 */
 .gh.edchk{gap:6px;border:1.5px solid #1A73E8;color:#1A4F9C;background:#fff;padding:5px 11px;cursor:pointer;user-select:none}
 .gh.edchk input{width:16px;height:16px;margin:0;accent-color:#1A73E8;cursor:pointer}
 .gh.edchk .bl{margin-left:0}
 @media (max-width:1500px){#top .tb .gh.edchk .bl{display:inline}}
 @media (max-width:1250px){#top .lg.gs{display:none}}
-#top .gh.green{background:#fff;color:#1F6F3F;box-shadow:inset 0 0 0 1.5px #1F6F3F}#top .gh.green:hover{background:#e3f1e8}
+#top .gh.green{background:#2E8B57;color:#fff;box-shadow:none}#top .gh.green:hover{background:#27774A}

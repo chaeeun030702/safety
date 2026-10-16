@@ -265,3 +265,21 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 #top .tb .gh .ic{font-size:8.5px}#top .tb .gh .bl{margin-left:3px}#top .tb .gh .cr{font-size:6px;margin-left:2px}
 @media (max-width:1500px){#top .tb .gh{min-width:24px;height:22px;padding:0 6px}#top .tb .gh .ic{font-size:10px}}
 #top .ddm{top:22px}
+
+/* 타이틀 바 20% 확대 (높이 43px) */
+#top{height:43px;gap:11px;padding:0 11px}
+#wrap{padding-top:43px}
+#top .stg{width:29px;height:29px}#top .stg svg{width:17px;height:17px}
+#top .lg{gap:6px}
+#top .lg img{height:30px}
+#top .lgt b{font-size:9.6px;letter-spacing:.35px}
+#top .lgt span{font-size:6.6px;letter-spacing:.85px}
+#top .lg.gs{padding-left:11px}#top .lg.gs img{height:22px}
+#top .tt{padding-left:11px}
+#top h1{font-size:12.6px}#top h1 .uitr{font-size:8.4px;margin-left:6px}
+#top .st{font-size:8.4px}
+#top .tb{gap:4px}
+#top .tb .gh{height:21px;font-size:9px;padding:0 8px;border-radius:11px}
+#top .tb .gh .ic{font-size:10.2px}#top .tb .gh .bl{margin-left:4px}#top .tb .gh .cr{font-size:7px}
+@media (max-width:1500px){#top .tb .gh{min-width:29px;height:26px;padding:0 7px}#top .tb .gh .ic{font-size:12px}}
+#top .ddm{top:26px}

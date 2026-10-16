@@ -247,3 +247,21 @@ body.out-ra #secPTW,body.out-ra #secPST,body.out-ptw #secRA,body.out-ptw #secPST
 @media (max-width:1500px){#top .tb .gh.edchk .bl{display:inline}}
 @media (max-width:1250px){#top .lg.gs{display:none}}
 #top .gh.green{background:#2E8B57;color:#fff;box-shadow:none}#top .gh.green:hover{background:#27774A}
+
+/* 타이틀 바 60% 축소 (높이 36px) */
+#top{height:36px;gap:9px;padding:0 9px}
+#wrap{padding-top:36px}
+#top .stg{width:24px;height:24px;margin-left:-2px}#top .stg svg{width:14px;height:14px}
+#top .lg{gap:5px}
+#top .lg img{height:25px}
+#top .lgt b{font-size:8px;letter-spacing:.3px}
+#top .lgt span{font-size:5.5px;letter-spacing:.7px}
+#top .lg.gs{padding-left:9px}#top .lg.gs img{height:18px}
+#top .tt{padding-left:9px}
+#top h1{font-size:10.5px}#top h1 .uitr{font-size:7px;margin-left:5px}
+#top .st{font-size:7px}
+#top .tb{gap:3px}
+#top .tb .gh{height:17.5px;font-size:7.5px;padding:0 7px;border-radius:10px;min-width:0}
+#top .tb .gh .ic{font-size:8.5px}#top .tb .gh .bl{margin-left:3px}#top .tb .gh .cr{font-size:6px;margin-left:2px}
+@media (max-width:1500px){#top .tb .gh{min-width:24px;height:22px;padding:0 6px}#top .tb .gh .ic{font-size:10px}}
+#top .ddm{top:22px}

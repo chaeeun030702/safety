@@ -172,7 +172,7 @@ body:not(.withpanel) #panel{display:none}
 #panel .cl{font-size:11px;display:flex;justify-content:space-between;gap:4px;border-bottom:1px dotted #ccd;padding:2px 0}
 #panel .cl button{border:none;background:none;color:#B03A2E;cursor:pointer}
 @media print{html,body{background:#fff}body,body.withpanel{padding:0}.bar,#panel{display:none!important}.sheet{margin:0;box-shadow:none}[contenteditable]{outline:none;background:none}}
-</style><style>
+.retain{position:absolute;top:2.2mm;right:6mm;z-index:5;border:1.2px solid #B3261E;border-radius:1.5mm;padding:.6mm 2mm;background:#fff;text-align:right;line-height:1.25;font-family:inherit}.retain b{display:block;font-size:7.6pt;color:#B3261E;font-weight:800}.retain small{display:block;font-size:6pt;color:#555}.retain i{display:block;font-style:normal;font-size:6.6pt;color:#1F4E79}@media print{.retain{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style><style>
 body.embed{padding:6px 0 10px!important;background:transparent!important}
 body.embed .bar,body.embed #panel{display:none!important}
 .estlast{margin-top:2mm;width:200mm}
@@ -442,7 +442,9 @@ function flowRows(after,firstInner,contInner,rowsH,tail){var sheet=newSheet(afte
   if(!fits(sheet)&&tb.children.length>1){tb.removeChild(el);sheet=newSheet(last,contInner);last=sheet;tb=$('table.ra tbody,table.rg tbody',sheet);tb.appendChild(el);}});
  if(tail){var el=frag(tail);fillAll(el);$('.body',sheet).appendChild(el);if(!fits(sheet)){el.parentNode.removeChild(el);sheet=newSheet(last,contInner.replace(/<table[\s\S]*$/,''));last=sheet;$('.body',sheet).appendChild(el);}}
  return last;}
-function ttl(k,sub,cont){return '<div class="ttl small"><h1>'+KO[k]+(cont?' '+KO.cont:'')+'</h1><div class="zh">'+trS(k)+(cont?' '+trS('cont'):'')+'</div>'+(sub?'<div class="sub1">'+tx(sub,null,'sec3')+'</div>':'')+'</div>';}
+var RETAIN={"t": ["서류 보존기간 3년", "Record retention: 3 years", "文件保存期限：3年", "Thời hạn lưu hồ sơ: 3 năm", "Hujjat saqlash muddati: 3 yil"], "b": ["산업안전보건법 시행규칙 제37조", "OSH Act Enforcement Rule Art. 37", "产业安全保健法施行规则 第37条", "Quy tắc thi hành Luật ATVSLĐ, Điều 37", "MMX qonuni ijro qoidalari, 37-modda"]};
+function retainHTML(){var L=['ko','en','zh','vi','uz'],i=L.indexOf(CUR);if(i<0)i=2;return '<div class="retain" aria-label="서류 보존기간"><b>'+RETAIN.t[0]+'</b><small>'+RETAIN.b[0]+'</small>'+(CUR!=='ko'?'<i>'+RETAIN.t[i]+'</i><small>'+RETAIN.b[i]+'</small>':'')+'</div>';}
+function ttl(k,sub,cont){return (k==='ra_t'&&!cont?retainHTML():'')+'<div class="ttl small"><h1>'+KO[k]+(cont?' '+KO.cont:'')+'</h1><div class="zh">'+trS(k)+(cont?' '+trS('cont'):'')+'</div>'+(sub?'<div class="sub1">'+tx(sub,null,'sec3')+'</div>':'')+'</div>';}
 
 function renderAll(){$$('.sheet.dyn').forEach(function(s){s.parentNode.removeChild(s);});
  if(!STR.k633x){STR.k633x=STR.k633;KO.k633x='안전보건관리책임자';}

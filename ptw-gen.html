@@ -95,7 +95,7 @@ td.grid4 .ci{width:23.5%}
 .fn .tr{margin-bottom:.8mm}
 .sheet.hid{display:none}
 @media print{.blk.hid{display:none!important}.panel{display:none!important}}
-</style><style>.rdsheet{display:none!important}.rdsheet .rdg{display:grid;grid-template-columns:70mm 1fr;gap:4mm;margin:2mm 0}.rph2{position:relative;border:1px solid #888;border-radius:3px;overflow:hidden;height:86mm}.rph2 img{width:100%;height:100%;object-fit:cover;display:block}
+.retain{position:absolute;top:2.2mm;right:6mm;z-index:5;border:1.2px solid #B3261E;border-radius:1.5mm;padding:.6mm 2mm;background:#fff;text-align:right;line-height:1.25;font-family:inherit}.retain b{display:block;font-size:7.6pt;color:#B3261E;font-weight:800}.retain small{display:block;font-size:6pt;color:#555}.retain i{display:block;font-style:normal;font-size:6.6pt;color:#1F4E79}@media print{.retain{-webkit-print-color-adjust:exact;print-color-adjust:exact}}.retain{top:1.6mm;right:11mm;padding:.4mm 1.8mm}.retain .rl{display:block;white-space:nowrap}.retain .rl b,.retain .rl small,.retain .rl i{display:inline}.retain .rl small{font-size:5.8pt}</style><style>.rdsheet{display:none!important}.rdsheet .rdg{display:grid;grid-template-columns:70mm 1fr;gap:4mm;margin:2mm 0}.rph2{position:relative;border:1px solid #888;border-radius:3px;overflow:hidden;height:86mm}.rph2 img{width:100%;height:100%;object-fit:cover;display:block}
 .mk2{position:absolute;transform:translate(-50%,-50%);background:#C0392B;color:#fff;font-size:9pt;font-weight:800;width:15pt;height:15pt;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
 .rdh2{font-weight:800;color:#1F4E79;font-size:9pt;margin:1mm 0}.hl2{margin:0;padding-left:0;list-style:none;font-size:7.3pt;line-height:1.28}.hl2 .tr{font-size:6.6pt}.hl2 li{margin:0 0 1.2mm}.hl2 .id{background:#1F4E79;color:#fff;border-radius:2px;padding:0 3px;font-size:7pt}.hl2 .cf{color:#666}.hl2 .ev{color:#333}
 .dom2{border:2px solid #1E7B3A;background:#E6F2E8;color:#14532d;font-weight:700;font-size:8.6pt;padding:1.6mm 3mm;border-radius:3px;margin:1mm 0}.dom2.elec{border-color:#C0392B;background:#fdeeee;color:#8a1c12}
@@ -432,4 +432,10 @@ window.hostSave=function(){var b=document.getElementById('b-save');if(b)b.click(
 window.hostEdit=function(on){if(!!on!==document.body.classList.contains('editing'))toggleEdit();};
 window.addEventListener('load',function(){try{if(window.parent!==window&&parent.ptwReady)parent.ptwReady('gen');}catch(e){}});
 })();
-</script></body></html>
+</script><script>(function(){var D={"t": ["서류 보존기간 1년 (밀폐공간 출입작업 3년)", "Record retention: 1 year (confined-space entry: 3 years)", "文件保存期限：1年（密闭空间进入作业3年）", "Thời hạn lưu hồ sơ: 1 năm (vào không gian kín: 3 năm)", "Hujjat saqlash muddati: 1 yil (yopiq joyga kirish: 3 yil)"], "b": ["KOSHA GUIDE C-C-49-2026 5.5 — 작업 완료 후 회수하여 보존", "KOSHA GUIDE C-C-49-2026 5.5 — collect and keep after the work", "KOSHA GUIDE C-C-49-2026 5.5 — 作业完成后收回保存", "KOSHA GUIDE C-C-49-2026 5.5 — thu hồi và lưu sau khi xong việc", "KOSHA GUIDE C-C-49-2026 5.5 — ish tugagach yig‘ib saqlanadi"]},L=['ko','en','zh','vi','uz'];
+function cur(){try{return (typeof LANG!=='undefined'?LANG:'zh');}catch(e){return 'zh';}}
+function html(l){var i=L.indexOf(l);if(i<0)i=2;return '<span class="rl"><b>'+D.t[0]+'</b> <small>'+D.b[0]+'</small></span>'+(l!=='ko'?'<span class="rl"><i>'+D.t[i]+'</i></span>':'');}
+function put(){var s=document.querySelector('.sheet:not(.rdsheet):not(.hid)')||document.querySelector('.sheet:not(.rdsheet)');if(!s)return;var e=s.querySelector('.retain');if(!e){e=document.createElement('div');e.className='retain';e.setAttribute('aria-label','서류 보존기간');s.appendChild(e);}
+ document.querySelectorAll('.retain').forEach(function(x){if(x.parentNode!==s)x.parentNode.removeChild(x);});e.innerHTML=html(cur());}
+var o=window.setLang;if(o)window.setLang=function(){var r=o.apply(this,arguments);put();return r;};
+if(document.readyState!=='loading')put();else document.addEventListener('DOMContentLoaded',put);window.addEventListener('load',put);window.retainPut=put;})();</script></body></html>

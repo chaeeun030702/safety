@@ -116,7 +116,7 @@ input[type=checkbox]{width:3.1mm;height:3.1mm;accent-color:#002A5C;vertical-alig
 .ai .tr{font-weight:600}
 .panel .cnt{font-weight:700;color:#C55A11}
 
-</style><style>.eg{margin:2px 0}.eg b{display:block;font-size:11px;color:#1F4E79}.eg label{display:inline-block;width:49%;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#domBanner{display:none;margin:4px 0;padding:6px 9px;border:2px solid #C0392B;background:#fdeeee;font-size:12px;font-weight:700;color:#8a1c12}#domBanner.on{display:block}tr.dim{opacity:.45}</style><style>
+.retain{position:absolute;top:2.2mm;right:6mm;z-index:5;border:1.2px solid #B3261E;border-radius:1.5mm;padding:.6mm 2mm;background:#fff;text-align:right;line-height:1.25;font-family:inherit}.retain b{display:block;font-size:7.6pt;color:#B3261E;font-weight:800}.retain small{display:block;font-size:6pt;color:#555}.retain i{display:block;font-style:normal;font-size:6.6pt;color:#1F4E79}@media print{.retain{-webkit-print-color-adjust:exact;print-color-adjust:exact}}.retain{top:1.6mm;right:11mm;padding:.4mm 1.8mm}.retain .rl{display:block;white-space:nowrap}.retain .rl b,.retain .rl small,.retain .rl i{display:inline}.retain .rl small{font-size:5.8pt}.sheet .stage{padding-right:64mm}.retain{top:1.2mm;right:8mm}</style><style>.eg{margin:2px 0}.eg b{display:block;font-size:11px;color:#1F4E79}.eg label{display:inline-block;width:49%;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#domBanner{display:none;margin:4px 0;padding:6px 9px;border:2px solid #C0392B;background:#fdeeee;font-size:12px;font-weight:700;color:#8a1c12}#domBanner.on{display:block}tr.dim{opacity:.45}</style><style>
 body.embed{padding-top:4px!important;background:transparent!important}
 body.embed .bar,body.embed #panel{display:none!important}
 body.embed .sheet{box-shadow:0 2px 10px rgba(0,0,0,.25)}
@@ -243,4 +243,10 @@ window.hostSave=function(){var b=document.getElementById('b-save');if(b)b.click(
 window.hostEdit=function(on){if(!!on!==document.body.classList.contains('editing'))toggleEdit();};
 window.addEventListener('load',function(){try{if(window.parent!==window&&parent.ptwReady)parent.ptwReady('c49');}catch(e){}});
 })();
-</script></body></html>
+</script><script>(function(){var D={"t": ["서류 보존기간 1년 (밀폐공간 출입작업 3년)", "Record retention: 1 year (confined-space entry: 3 years)", "文件保存期限：1年（密闭空间进入作业3年）", "Thời hạn lưu hồ sơ: 1 năm (vào không gian kín: 3 năm)", "Hujjat saqlash muddati: 1 yil (yopiq joyga kirish: 3 yil)"], "b": ["KOSHA GUIDE C-C-49-2026 5.5 — 작업 완료 후 회수하여 보존", "KOSHA GUIDE C-C-49-2026 5.5 — collect and keep after the work", "KOSHA GUIDE C-C-49-2026 5.5 — 作业完成后收回保存", "KOSHA GUIDE C-C-49-2026 5.5 — thu hồi và lưu sau khi xong việc", "KOSHA GUIDE C-C-49-2026 5.5 — ish tugagach yig‘ib saqlanadi"]},L=['ko','en','zh','vi','uz'];
+function cur(){try{return (typeof CUR!=='undefined'?CUR:'zh');}catch(e){return 'zh';}}
+function html(l){var i=L.indexOf(l);if(i<0)i=2;return '<span class="rl"><b>'+D.t[0]+'</b> <small>'+D.b[0]+'</small></span>'+(l!=='ko'?'<span class="rl"><i>'+D.t[i]+'</i></span>':'');}
+function put(){var s=document.querySelector('.sheet:not(.rdsheet):not(.hid)')||document.querySelector('.sheet:not(.rdsheet)');if(!s)return;var e=s.querySelector('.retain');if(!e){e=document.createElement('div');e.className='retain';e.setAttribute('aria-label','서류 보존기간');s.appendChild(e);}
+ document.querySelectorAll('.retain').forEach(function(x){if(x.parentNode!==s)x.parentNode.removeChild(x);});e.innerHTML=html(cur());}
+var o=window.setLang;if(o)window.setLang=function(){var r=o.apply(this,arguments);put();return r;};
+if(document.readyState!=='loading')put();else document.addEventListener('DOMContentLoaded',put);window.addEventListener('load',put);window.retainPut=put;})();</script></body></html>
